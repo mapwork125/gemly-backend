@@ -1,0 +1,36 @@
+{
+  "info": {
+    "name": "Diamond API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"name\":\"Test\",\"email\":\"t@t.com\",\"password\":\"pass\" }"
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/auth/register"
+        }
+      }
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{ \"email\":\"t@t.com\",\"password\":\"pass\" }"
+        },
+        "url": {
+          "raw": "{{url}}/api/v1/auth/login"
+        }
+      }
+    }
+  ]
+}
