@@ -1,6 +1,6 @@
 import { Request } from "express";
 import { asyncHandler } from "../../utils/asyncHandler.utility";
-import { success } from "../../utils/response.utility";
+import { fail, success } from "../../utils/response.utility";
 import service from "./requirement.service";
 
 export const index = asyncHandler(async (req, res) =>
@@ -18,6 +18,11 @@ export const update = asyncHandler(async (req, res) =>
   success(res, "updated", (await service.update(req.params.id, req.body)) || {})
 );
 //@ts-ignore
-export const remove = asyncHandler(async (req, res) =>
-  success(res, "removed", (await service.remove(req.params.id)) || {})
-);
+export const remove = asyncHandler(async (req, res) => {
+  const data = await service.remove(req.params.id);
+  if (!data) {
+    fail(res, "Requirement not found", 404);
+  } else {
+    success(res, "removed", data);
+  }
+});

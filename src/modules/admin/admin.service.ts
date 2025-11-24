@@ -17,7 +17,8 @@ class AdminService {
       await notificationService.sendNotification(
         user._id,
         "Account Verified",
-        "Your account has been verified by the admin."
+        "Your account has been verified by the admin.",
+        user.toObject()
       );
     }
     return user;
@@ -37,7 +38,8 @@ class AdminService {
       await notificationService.sendNotification(
         ad.requester,
         "Ad Approved",
-        `Your ad "${ad.title}" has been approved by the admin.`
+        `Your ad "${ad.title}" has been approved by the admin.`,
+        ad.toObject()
       );
     }
     return ad;

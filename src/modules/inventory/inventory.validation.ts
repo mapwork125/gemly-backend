@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export const inventorySchema = Joi.object({
   name: Joi.string().required(),
@@ -9,11 +9,11 @@ export const inventorySchema = Joi.object({
 });
 
 export const updateInventorySchema = Joi.object({
-    name: Joi.string().optional(),
-    description: Joi.string().optional(),
-    quantity: Joi.number().optional(),
-    price: Joi.number().optional(),
-    sku: Joi.string().optional(),
+  name: Joi.string().optional(),
+  description: Joi.string().optional(),
+  quantity: Joi.number().optional(),
+  price: Joi.number().optional(),
+  sku: Joi.string().optional(),
 });
 
 export const inventoryIdSchema = Joi.object({

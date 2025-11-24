@@ -1,4 +1,4 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export const initiateSchema = Joi.object({
   other: Joi.string().hex().length(24).required(),
@@ -11,5 +11,6 @@ export const sendMessageSchema = Joi.object({
 });
 
 export const conversationIdSchema = Joi.object({
-  conversationId: Joi.string().required(),
+  user1: Joi.string().hex().length(24).required(),
+  user2: Joi.string().hex().length(24).required(),
 });

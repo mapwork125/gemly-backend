@@ -7,25 +7,29 @@ class BidService {
     const reqDoc: any = await Requirement.findById(requirementId);
     if (!reqDoc || !reqDoc.isActive) throw new Error("Requirement not active");
     const bid = await Bid.create({
-      requirement: requirementId,
       bidder: user._id,
       ...body,
     });
+    const requirement: any = await Requirement.findById(requirementId);
+    requirement.bids.push(bid._id);
+    await requirement.save();
+
     await notificationService.sendNotification(
-      reqDoc.owner,
-      "New Bid",
-      `You have a new bid on your requirement "${reqDoc.title}".`
+      reqDoc.requirementAdmin,
+      "New Bid by " + user.name,
+      `You have a new bid on your requirement "${reqDoc.title}".`,
+      requirement.toObject()
     );
     return bid;
   }
   async list(requirementId, user) {
-    const bids = await Bid.find({ requirement: requirementId }).populate(
-      "bidder",
-      "name"
+    const requirement: any = await Requirement.findById(requirementId);
+    const bids = await Bid.find({ _id: { $in: requirement.bids } }).populate(
+      "bidder"
     );
-    // if user is owner, return full, else limited
-    const reqDoc: any = await Requirement.findById(requirementId);
-    if (reqDoc.owner.toString() === user._id.toString()) return bids;
+    // if user is requirementAdmin, return full, else limited
+    if (requirement.requirementAdmin.toString() === user._id.toString())
+      return bids;
     return bids.map((b: any) => ({ price: b.price, bidder: b.bidder.name }));
   }
 }

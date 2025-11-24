@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 export const escrowSchema = Joi.object({
-  deal: Joi.string().hex().length(24).required(),
+  dealId: Joi.string().hex().length(24).required(),
   amount: Joi.number().required(),
 });
 

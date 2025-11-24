@@ -12,6 +12,7 @@ export const createPaymentIntent = async (
     amount,
     currency,
     metadata,
+    automatic_payment_methods: { enabled: true },
   });
   return paymentIntent;
 };

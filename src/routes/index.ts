@@ -16,15 +16,15 @@ const router = Router();
 
 router.use("/auth", authRoutes);
 router.use("/requirements", requirementRoutes);
-router.use("/notifications", notificationRoutes);
-router.use("/notification-settings", notificationSettingsRoutes);
 router.use("/bids", bidRoutes);
+router.use("/chat", chatRoutes);
 router.use("/deals", dealRoutes);
 router.use("/escrow", escrowRoutes);
-router.use("/chat", chatRoutes);
 router.use("/inventory", inventoryRoutes);
 router.use("/ratings", ratingRoutes);
 router.use("/ads", adsRoutes);
 router.use("/admin", adminRoutes);
+router.use("/notifications", notificationRoutes);
+router.use("/notification-settings", notificationSettingsRoutes);
 
 export default router;

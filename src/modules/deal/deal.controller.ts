@@ -3,12 +3,7 @@ import { success } from "../../utils/response.utility";
 import service from "./deal.service";
 
 export const createDeal = asyncHandler(async (req, res) =>
-  success(
-    res,
-    "deal created",
-    await service.create(req.params.bidId, req.user),
-    201
-  )
+  success(res, "deal created", await service.create(req.body, req.user), 201)
 );
 //@ts-ignore
 export const getDeal = asyncHandler(async (req, res) =>

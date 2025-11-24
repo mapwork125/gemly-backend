@@ -10,7 +10,11 @@ export const markRead = asyncHandler(async (req, res) =>
   success(
     res,
     "marked",
-    (await service.markRead(req.user._id, req.params.id)) || {}
+    (await service.markRead(
+      req.user._id,
+      req.params.id,
+      req?.query?.allread
+    )) || {}
   )
 );
 export const remove = asyncHandler(async (req, res) =>

@@ -1,8 +1,8 @@
-import Joi from 'joi';
+import Joi from "joi";
 
 export const ratingSchema = Joi.object({
-  rating: Joi.number().min(1).max(5).required(),
-  comment: Joi.string().optional(),
+  score: Joi.number().min(1).max(5).required(),
+  review: Joi.string().required(),
 });
 
 export const userIdSchema = Joi.object({

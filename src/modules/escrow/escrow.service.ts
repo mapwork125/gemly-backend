@@ -9,7 +9,7 @@ import Deal from "../../models/Deal.model";
 
 class EscrowService {
   async initiate(body: { dealId: string; amount: number }) {
-    const paymentIntent = await createPaymentIntent(body.amount * 100, "usd", {
+    const paymentIntent = await createPaymentIntent(body.amount, "usd", {
       dealId: body.dealId,
     });
     return Escrow.create({

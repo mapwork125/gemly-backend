@@ -4,16 +4,24 @@ import Inventory from "../../models/Inventory.model";
 import { generateBarcode } from "../../utils/barcode.utility";
 
 export const create = asyncHandler(async (req, res) => {
-  const b = generateBarcode(req.body.sku || Date.now().toString());
   const item = await Inventory.create({
     ...req.body,
-    owner: req.user._id,
-    barcode: b.code,
+    createdBy: req.user._id,
   });
-  return success(res, "created", item, 201);
+  const b: string = await generateBarcode();
+  const itemNew = await Inventory.findByIdAndUpdate(
+    item._id,
+    {
+      barcode: b,
+    },
+    {
+      new: true,
+    }
+  );
+  return success(res, "created", itemNew, 201);
 });
 export const index = asyncHandler(async (req, res) =>
-  success(res, "list", await Inventory.find({ owner: req.user._id }))
+  success(res, "list", await Inventory.find({ createdBy: req.user._id }))
 );
 // @ts-ignore
 export const update = asyncHandler(async (req, res) =>

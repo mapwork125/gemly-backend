@@ -13,7 +13,20 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const verifyIdentity = asyncHandler(async (req, res) => {
-  const data: any = await authService.verifyIdentity(req.user._id, req.body);
+  // Check if a file was uploaded
+  if (!req.file) {
+    return fail(res, "No document uploaded", 400);
+  }
+
+  // Construct the document link
+  const documentLink = `/uploads/identity/${req.file.filename}`;
+
+  // Call the service to verify identity and update the user
+  const data: any = await authService.verifyIdentity(req.user._id, {
+    ...req.body,
+    document: documentLink, // Add the document link to the payload
+  });
+
   return success(res, "Identity verified", data);
 });
 
@@ -28,5 +41,6 @@ export const updateProfile = asyncHandler(async (req, res) => {
 
 export const logout = asyncHandler(async (req, res) => {
   // token invalidation can be handled via blacklist or short expiry
+  await authService.logout(req.user._id);
   return success(res, "Logged out", {});
 });

@@ -6,25 +6,30 @@ class ReqService {
   async index(req) {
     // auto-disable expired
     await Requirement.updateMany(
-      { deadline: { $lt: new Date() } },
+      { endDate: { $lt: new Date() } },
       { isActive: false }
     );
-    return Requirement.find({ isActive: true });
+    return Requirement.find({
+      isActive: true,
+      startDate: { $lt: new Date() },
+      endDate: { $gt: new Date() },
+    });
   }
   async get(id) {
     return Requirement.findById(id) || {};
   }
   async create(body, req) {
-    body.owner = req.user._id;
+    body.requirementAdmin = req.user._id;
     const requirement = await Requirement.create(body);
-    const users: any = await User.find({ role: "seller" });
+    const users: any = await User.find({ _id: { $ne: req.user._id } });
     for (const user of users) {
-      await notificationService.sendNotification(
-        user._id,
-        "New Requirement",
-        `A new requirement "${requirement.title}" has been posted.`
-      );
     }
+    await notificationService.sendBulkNotification(
+      users.map((u) => u._id.toString()),
+      "New Requirement",
+      `A new requirement "${requirement.title}" has been posted.`,
+      requirement.toObject()
+    );
     return requirement;
   }
   async update(id, body) {
