@@ -32,11 +32,30 @@ class ReqService {
     );
     return requirement;
   }
-  async update(id, body) {
-    return Requirement.findByIdAndUpdate(id, body, { new: true });
+  async update(id, body, userid) {
+    const requirement = await Requirement.findOneAndUpdate(
+      { _id: id, requirementAdmin: userid },
+      body,
+      { new: true }
+    );
+
+    if (!requirement) {
+      throw new Error("Requirement not found or unauthorized");
+    }
+
+    return requirement;
   }
-  async remove(id) {
-    return Requirement.findByIdAndDelete(id);
+  async remove(id, userid) {
+    const requirement = await Requirement.findOneAndDelete({
+      _id: id,
+      requirementAdmin: userid,
+    });
+
+    if (!requirement) {
+      throw new Error("Requirement not found or unauthorized");
+    }
+
+    return requirement;
   }
 }
 export default new ReqService();

@@ -14,12 +14,17 @@ export const create = asyncHandler(async (req, res) =>
   success(res, "created", await service.create(req.body, req), 201)
 );
 //@ts-ignore
-export const update = asyncHandler(async (req, res) =>
-  success(res, "updated", (await service.update(req.params.id, req.body)) || {})
-);
+export const update = asyncHandler(async (req, res) => {
+  const data = await service.update(req.params.id, req.body, req.user.id);
+  if (!data) {
+    fail(res, "Requirement not found", 404);
+  } else {
+    success(res, "updated", data);
+  }
+});
 //@ts-ignore
 export const remove = asyncHandler(async (req, res) => {
-  const data = await service.remove(req.params.id);
+  const data = await service.remove(req.params.id, req.user.id);
   if (!data) {
     fail(res, "Requirement not found", 404);
   } else {

@@ -24,9 +24,12 @@ class BidService {
   }
   async list(requirementId, user) {
     const requirement: any = await Requirement.findById(requirementId);
-    const bids = await Bid.find({ _id: { $in: requirement.bids } }).populate(
-      "bidder"
-    );
+    const bids = await Bid.find({ _id: { $in: requirement.bids } })
+      .populate({
+        path: "bidder",
+        select: "_id name email",
+      })
+      .select("isSeen proposal price");
     // if user is requirementAdmin, return full, else limited
     if (requirement.requirementAdmin.toString() === user._id.toString())
       return bids;
