@@ -21,7 +21,7 @@ export const generateQRCode = async (text: string): Promise<string> => {
  * @returns The URL of the saved QR code image.
  */
 export const generateBarcode = async (
-  data: string = "https://youtube.com"
+  data: string = "https://youtube.com" // will set product link or info here
 ): Promise<string> => {
   try {
     // Generate the QR code as a base64 data URL
