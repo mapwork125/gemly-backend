@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
+dotenv.config();
 import app from "./app";
 import { mongooseConnection } from "./config/connection";
 import { httpServer } from "./socket";
 import bcrypt from "bcryptjs";
 import User from "./models/User.model";
 import { USER_TYPE } from "./utils/constants.utility";
-dotenv.config();
 
 app.use(mongooseConnection);
 
