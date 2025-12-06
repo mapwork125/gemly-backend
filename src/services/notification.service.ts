@@ -1,39 +1,61 @@
 import { sendPush } from "../utils/firebase.utility";
 import User from "../models/User.model";
 import Notification from "../models/Notification.model";
+import {
+  NOTIFICATION_TYPE,
+  NOTIFICATION_CATEGORY,
+} from "../utils/constants.utility";
 
 class NotificationService {
   async sendNotification(
     userId: string,
-    title: string,
-    body: string,
-    data: any = {}
+    body: {
+      title: string;
+      message: string;
+      actionUrl?: string;
+      data?: any;
+      type: NOTIFICATION_TYPE;
+      category: NOTIFICATION_CATEGORY;
+    }
   ) {
+    const { title, message, data = {}, actionUrl, type, category } = body;
     const user = await User.findById(userId);
     if (!user?.notificationsEnabled) return;
     if (user && user.fcmToken) {
       await sendPush([user.fcmToken], {
         notification: {
           title,
-          body,
+          message,
+          actionUrl,
+          type,
+          category,
         },
         data,
       });
     }
     await Notification.create({
-      user: userId,
+      userId: userId,
       title,
-      body,
-      meta: {},
+      message,
+      data,
+      actionUrl,
+      type,
+      category,
     });
   }
 
   async sendBulkNotification(
     userIds: string[],
-    title: string,
-    body: string,
-    data: any = {}
+    body: {
+      title: string;
+      message: string;
+      actionUrl?: string;
+      data?: any;
+      type: NOTIFICATION_TYPE;
+      category: NOTIFICATION_CATEGORY;
+    }
   ) {
+    const { title, message, data = {}, actionUrl, type, category } = body;
     // Get all users with their FCM tokens
     let users = await User.find({
       _id: { $in: userIds },
@@ -57,7 +79,10 @@ class NotificationService {
       await sendPush(fcmTokens, {
         notification: {
           title,
-          body,
+          message,
+          actionUrl,
+          type,
+          category,
         },
         data,
       });
@@ -65,16 +90,27 @@ class NotificationService {
 
     // Create notification records in bulk
     const notifications = userIds.map((userId) => ({
-      user: userId,
+      userId: userId,
       title,
-      body,
-      meta: data,
+      message,
+      data,
+      actionUrl,
+      type,
+      category,
     }));
 
     await Notification.insertMany(notifications);
   }
 
-  async sendToAllUsers(title: string, body: string, data?: any) {
+  async sendToAllUsers(body: {
+    title: string;
+    message: string;
+    actionUrl?: string;
+    data?: any;
+    type: NOTIFICATION_TYPE;
+    category: NOTIFICATION_CATEGORY;
+  }) {
+    const { title, message, data = {}, actionUrl, type, category } = body;
     // Get all users with FCM tokens
     let users = await User.find({
       fcmToken: { $exists: true, $ne: null },
@@ -99,7 +135,10 @@ class NotificationService {
       await sendPush(fcmTokens, {
         notification: {
           title,
-          body,
+          message,
+          actionUrl,
+          type,
+          category,
         },
         data,
       });
@@ -107,10 +146,13 @@ class NotificationService {
 
     // Create notification records
     const notifications = userIds.map((userId) => ({
-      user: userId,
+      userId: userId,
       title,
-      body,
+      message,
       data,
+      actionUrl,
+      type,
+      category,
     }));
 
     await Notification.insertMany(notifications);

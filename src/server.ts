@@ -5,7 +5,9 @@ import { mongooseConnection } from "./config/connection";
 import { httpServer } from "./socket";
 import bcrypt from "bcryptjs";
 import User from "./models/User.model";
-import { USER_TYPE } from "./utils/constants.utility";
+import { USER_STATUS, USER_ROLE } from "./utils/constants.utility";
+import schedulerService from "./services/scheduler.service";
+import CronService from "./services/cron.service";
 
 app.use(mongooseConnection);
 
@@ -24,8 +26,8 @@ const ensureAdminExists = async () => {
       email: adminEmail,
       password: hashed,
       name: "Admin",
-      role: USER_TYPE.ADMIN,
-      isVerified: true,
+      role: USER_ROLE.ADMIN,
+      status: USER_STATUS.APPROVED,
       notificationsEnabled: true,
     });
     console.log("Admin user created successfully.");
@@ -37,4 +39,6 @@ const ensureAdminExists = async () => {
 httpServer.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   ensureAdminExists();
+  schedulerService.init();
+  CronService.start();
 });

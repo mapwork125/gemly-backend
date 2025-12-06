@@ -1,5 +1,31 @@
-export const success = (res, message = "Success", data: any = {}, code = 200) =>
-  res.status(code).json({ status: true, message, data });
+export const success = (
+  res,
+  message = "Success",
+  data: any = {},
+  code = 200,
+  status = "",
+  obj: any = {}
+) =>
+  res.status(code).json({
+    success: true,
+    message,
+    ...(data ? { data: data } : {}),
+    ...(status ? { status: status } : {}),
+    ...obj,
+  });
 
-export const fail = (res, message = "Failure", code = 400, data = {}) =>
-  res.status(code).json({ status: false, message, data });
+export const fail = (
+  res,
+  message = "Failure",
+  code = 400,
+  data = {},
+  status = "",
+  obj: any = {}
+) =>
+  res.status(code).json({
+    success: false,
+    message,
+    errors: data,
+    ...(status ? { status: status } : {}),
+    ...obj,
+  });

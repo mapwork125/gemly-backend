@@ -1,50 +1,84 @@
 import QRCode from "qrcode";
-import fs from "fs";
-import path from "path";
+import bwipjs from "bwip-js";
+import Inventory from "../models/Inventory.model";
+
 /**
- * Generate a QR code for the given text.
+ * Generate unique inventory ID in format INV-YYYY-XXXXX
+ */
+export async function generateInventoryId(): Promise<string> {
+  const year = new Date().getFullYear();
+
+  // Find the last inventory item for this year
+  const lastItem = await Inventory.findOne({
+    inventoryId: new RegExp(`^INV-${year}-`),
+  }).sort({ createdAt: -1 });
+
+  let nextNumber = 1;
+  if (lastItem && lastItem.inventoryId) {
+    const lastNumber = parseInt(lastItem.inventoryId.split("-")[2]);
+    nextNumber = lastNumber + 1;
+  }
+
+  return `INV-${year}-${String(nextNumber).padStart(5, "0")}`;
+}
+
+/**
+ * Generate barcode image from text using Code128
+ * @param text - Text to encode (e.g., "INV202400001")
+ * @param type - Barcode type (default: code128)
+ * @returns Base64 encoded PNG image
+ */
+export async function generateBarcode(
+  text: string,
+  type: string = "code128"
+): Promise<string> {
+  try {
+    // Remove hyphens from inventory ID for cleaner barcode
+    const cleanText = text.replace(/-/g, "");
+
+    const png = await bwipjs.toBuffer({
+      bcid: type, // Barcode type
+      text: cleanText, // Text to encode
+      scale: 3, // Scaling factor
+      height: 10, // Bar height in mm
+      includetext: true, // Show human-readable text
+      textxalign: "center", // Center text
+      textsize: 13, // Font size
+    });
+
+    // Convert buffer to base64
+    const base64 = `data:image/png;base64,${png.toString("base64")}`;
+    return base64;
+  } catch (error) {
+    console.error("Barcode generation error:", error);
+    throw new Error("Failed to generate barcode");
+  }
+}
+
+/**
+ * Generate a QR code for the given text (mobile scanning)
  * @param text - The text to encode in the QR code.
  * @returns A promise that resolves to the QR code as a data URL.
  */
 export const generateQRCode = async (text: string): Promise<string> => {
   try {
-    const qrCodeDataUrl = await QRCode.toDataURL(text);
+    const qrCodeDataUrl = await QRCode.toDataURL(text, {
+      errorCorrectionLevel: "M",
+      type: "image/png",
+      width: 300,
+      margin: 2,
+    });
     return qrCodeDataUrl; // Returns the QR code as a base64 data URL
   } catch (error) {
     console.error("Error generating QR code:", error);
     throw new Error("Failed to generate QR code");
   }
 };
+
 /**
- * Generate a QR code and save it as an image in the uploads folder.
- * @param data - The data to encode in the QR code.
- * @returns The URL of the saved QR code image.
+ * Validate barcode text format
  */
-export const generateBarcode = async (
-  data: string = "https://youtube.com" // will set product link or info here
-): Promise<string> => {
-  try {
-    // Generate the QR code as a base64 data URL
-    const qrCodeDataUrl = await generateQRCode(data);
-
-    // Decode the base64 data URL to binary data
-    const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
-    const fileName = `qr-code-${Date.now()}.png`;
-    const filePath = path.join(__dirname, "../uploads", fileName);
-
-    // Ensure the uploads directory exists
-    const uploadsDir = path.join(__dirname, "../uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir);
-    }
-
-    // Write the binary data to a file
-    fs.writeFileSync(filePath, base64Data, "base64");
-
-    // Return the URL of the saved QR code image
-    return `/uploads/${fileName}`;
-  } catch (error) {
-    console.error("Error generating barcode:", error);
-    throw new Error("Failed to generate barcode");
-  }
-};
+export function validateBarcodeText(text: string): boolean {
+  // Check if text is alphanumeric and reasonable length
+  return /^[A-Z0-9]{5,20}$/.test(text);
+}

@@ -1,12 +1,33 @@
 import mongoose from "mongoose";
+import {
+  NOTIFICATION_CATEGORY,
+  NOTIFICATION_TYPE,
+} from "../utils/constants.utility";
 const NotificationSchema = new mongoose.Schema(
   {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     title: String,
-    body: String,
-    type: { type: String, enum: ["business", "general"], default: "general" },
+    message: String,
+    actionUrl: String,
+    type: {
+      type: String,
+      enum: [
+        NOTIFICATION_TYPE.GENERAL,
+        NOTIFICATION_TYPE.BID,
+        NOTIFICATION_TYPE.CHAT,
+        NOTIFICATION_TYPE.DEAL,
+        NOTIFICATION_TYPE.SYSTEM,
+        NOTIFICATION_TYPE.REQUIREMENT,
+      ],
+      default: NOTIFICATION_TYPE.GENERAL,
+    },
+    category: {
+      type: String,
+      enum: [NOTIFICATION_CATEGORY.ACTIONABLE, NOTIFICATION_CATEGORY.GENERAL],
+      default: NOTIFICATION_CATEGORY.GENERAL,
+    },
     read: { type: Boolean, default: false },
-    meta: mongoose.Schema.Types.Mixed,
+    data: mongoose.Schema.Types.Mixed,
   },
   {
     timestamps: true,
@@ -15,12 +36,13 @@ const NotificationSchema = new mongoose.Schema(
 
 export interface INotification extends mongoose.Document {
   _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
   title: string;
-  body: string;
-  type: "business" | "general";
+  message: string;
+  actionUrl?: string;
+  type: NOTIFICATION_TYPE;
   read: boolean;
-  meta?: any;
+  data?: any;
   createdAt: Date;
   updatedAt: Date;
 }

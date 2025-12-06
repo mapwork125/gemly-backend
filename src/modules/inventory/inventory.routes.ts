@@ -9,11 +9,29 @@ import {
   inventorySchema,
   updateInventorySchema,
   inventoryIdSchema,
+  deleteInventorySchema,
+  quickStatusUpdateSchema,
+  inventoryQuerySchema,
 } from "./inventory.validation";
+
 const r = Router();
 
+// Create new inventory item
 r.post("/", authMiddleware, validate(inventorySchema), C.create);
-r.get("/", authMiddleware, C.index);
+
+// List inventory with filtering and pagination
+r.get("/", authMiddleware, validate(inventoryQuerySchema), C.index);
+
+// Quick status update (for mobile barcode scanning)
+r.patch(
+  "/:id/quick-status",
+  authMiddleware,
+  validateParams(inventoryIdSchema),
+  validate(quickStatusUpdateSchema),
+  C.quickStatusUpdate
+);
+
+// Update inventory item (full update)
 r.put(
   "/:id",
   authMiddleware,
@@ -21,6 +39,14 @@ r.put(
   validate(updateInventorySchema),
   C.update
 );
-r.delete("/:id", authMiddleware, validateParams(inventoryIdSchema), C.remove);
+
+// Soft delete inventory item
+r.delete(
+  "/:id",
+  authMiddleware,
+  validateParams(inventoryIdSchema),
+  validate(deleteInventorySchema),
+  C.remove
+);
 
 export default r;

@@ -6,6 +6,7 @@ import {
   registerSchema,
   loginSchema,
   profileUpdateSchema,
+  verifyIdentitySchema,
 } from "./auth.validation";
 import multer from "multer";
 import path from "path";
@@ -89,6 +90,7 @@ const saveFile = async (req, res, next) => {
       .json({ status: false, message: "Failed to save file" });
   }
 };
+
 router.post("/register", validate(registerSchema), Auth.register);
 router.post("/login", validate(loginSchema), Auth.login);
 router.post(
@@ -97,6 +99,7 @@ router.post(
   upload.single("document"),
   compressImage, // Compress the image if necessary
   saveFile, // Save the file to disk
+  validate(verifyIdentitySchema),
   Auth.verifyIdentity
 );
 router.get("/profile", authMiddleware, Auth.getProfile);
