@@ -1,7 +1,6 @@
 import * as admin from "firebase-admin";
 
-var serviceAccount = require("../../dimond-platform-firebase-adminsdk-fbsvc-21f1aef4b8.json");
-
+var serviceAccount = require("../../gemly-2f680-firebase-adminsdk-fbsvc-f8c496e88f.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
