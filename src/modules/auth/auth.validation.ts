@@ -56,7 +56,7 @@ export const verifyIdentitySchema = Joi.object({
   }).required(),
 
   documents: Joi.object({
-    document: Joi.string().optional(),
+    aadharDocument: Joi.string().optional(),
     panDocument: Joi.string().optional(),
   }).optional(),
 

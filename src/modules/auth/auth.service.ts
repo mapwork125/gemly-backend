@@ -10,7 +10,13 @@ class AuthService {
     let user: any = await User.findOne({ email: data.email });
     if (user) throw new Error(RESPONSE_MESSAGES.EMAIL_ALREADY_EXISTS);
     user = await User.create(data);
-    return { status: USER_STATUS.PENDING_KYC };
+    const token = generateToken({
+      id: user._id,
+      role: user.role,
+      userType: user.userType,
+      tokenVersion: user.tokenVersion,
+    });
+    return { status: USER_STATUS.PENDING_KYC, token };
   }
   async login({ email, password }) {
     // user check
@@ -66,6 +72,7 @@ class AuthService {
       //@ts-ignore
       user?.kyc["diamondIndustryActivity"] = body.diamondIndustryActivity;
 
+    await user.save();
     return user;
   }
   async logout(id) {

@@ -5,10 +5,11 @@ import authService from "./auth.service";
 
 export const register = asyncHandler(async (req, res) => {
   const user = await authService.register(req.body);
+
   return success(
     res,
     RESPONSE_MESSAGES.REGISTER_SUCCESS,
-    {},
+    { ...user },
     200,
     USER_STATUS.PENDING_KYC
   );
@@ -30,8 +31,8 @@ export const verifyIdentity = asyncHandler(async (req, res) => {
     return fail(res, RESPONSE_MESSAGES.NO_DOC_UPLOADED, 400);
   }
 
-  // Construct the document link
-  const documentLink = `/uploads/identity/${req.file.filename}`;
+  // Construct the document link (req.file.path is set by saveFile middleware)
+  const documentLink = req.file.path;
 
   const body = {
     ...req.body,

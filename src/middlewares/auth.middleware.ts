@@ -13,6 +13,8 @@ export const authMiddleware = async (req, res, next) => {
       return res
         .status(401)
         .json({ status: false, message: RESPONSE_MESSAGES.AUTH_TOKEN_MISSING });
+    console.log("token", auth);
+
     const token = auth.split(" ")[1];
     const decoded: any = verifyToken(token);
     console.log(decoded);
@@ -25,7 +27,13 @@ export const authMiddleware = async (req, res, next) => {
     req.user = user;
 
     if (req.method !== "GET" && user.role !== USER_ROLE.ADMIN) {
-      if (user?.status === USER_STATUS.PENDING_KYC) {
+      // Allow PENDING_KYC users to access verify-identity endpoint
+      const isVerifyIdentityEndpoint = req.path.includes("/verify-identity");
+
+      if (
+        user?.status === USER_STATUS.PENDING_KYC &&
+        !isVerifyIdentityEndpoint
+      ) {
         return res
           .status(403)
           .json({ status: false, message: "registered but no KYC submitted" });
@@ -49,6 +57,8 @@ export const authMiddleware = async (req, res, next) => {
 
     next();
   } catch (err) {
+    console.log("err", err);
+
     next(err);
   }
 };
