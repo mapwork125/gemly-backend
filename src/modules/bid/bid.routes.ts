@@ -19,6 +19,10 @@ const r = Router();
 const bidIdSchema = Joi.object({
   bidId: Joi.string().hex().length(24).required(),
 });
+const updatebidIdSchema = Joi.object({
+  requirementId: Joi.string().hex().length(24).required(),
+  bidId: Joi.string().hex().length(24).required(),
+});
 
 const requirementBidSchema = Joi.object({
   requirementId: Joi.string().hex().length(24).required(),
@@ -76,7 +80,7 @@ r.get(
 r.put(
   "/:requirementId/:bidId",
   authMiddleware,
-  validateParams(bidIdSchema),
+  validateParams(updatebidIdSchema),
   validate(bidUpdateSchema),
   C.updateBid
 );

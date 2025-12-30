@@ -53,20 +53,20 @@ r.post(
   C.sendMessage
 );
 
+// Get list of conversations (moved to root before param routes)
+r.get(
+  "/conversations",
+  authMiddleware,
+  validateQuery(listConversationsQuerySchema),
+  C.listConversations
+);
+
 r.get(
   "/:conversationId",
   authMiddleware,
   validateParams(conversationIdParamSchema),
   validateQuery(conversationMessagesQuerySchema),
   C.getConversationMessages
-);
-
-// Get list of conversations (moved to root before param routes)
-r.get(
-  "/",
-  authMiddleware,
-  validateQuery(listConversationsQuerySchema),
-  C.listConversations
 );
 
 // Upload attachment endpoint

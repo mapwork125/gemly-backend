@@ -6,6 +6,7 @@ import {
   generateBarcode,
   generateInventoryId,
 } from "../../utils/barcode.utility";
+import mongoose from "mongoose";
 
 // Status transition validation
 const VALID_TRANSITIONS: Record<string, string[]> = {
@@ -232,9 +233,16 @@ export const update = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const updates = req.body;
 
-  // Find item (support both _id and inventoryId)
+  // Build query conditions (support both _id and inventoryId)
+  const queryConditions: any[] = [{ inventoryId: id }, { barcode: id }];
+
+  // Only query by _id if id is a valid ObjectId
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    queryConditions.unshift({ _id: id });
+  }
+
   const item = await Inventory.findOne({
-    $or: [{ _id: id }, { inventoryId: id }, { barcode: id }],
+    $or: queryConditions,
     userId,
     deletedAt: null,
   });
@@ -335,9 +343,16 @@ export const remove = asyncHandler(async (req, res) => {
   const userId = req.user._id;
   const { reason, notes } = req.body;
 
-  // Find item
+  // Build query conditions (support both _id and inventoryId)
+  const queryConditions: any[] = [{ inventoryId: id }, { barcode: id }];
+
+  // Only query by _id if id is a valid ObjectId
+  if (mongoose.Types.ObjectId.isValid(id)) {
+    queryConditions.unshift({ _id: id });
+  }
+
   const item = await Inventory.findOne({
-    $or: [{ _id: id }, { inventoryId: id }, { barcode: id }],
+    $or: queryConditions,
     userId,
     deletedAt: null,
   });

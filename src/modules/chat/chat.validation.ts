@@ -40,7 +40,7 @@ export const sendMessageSchema = Joi.object({
     .items(
       Joi.object({
         type: Joi.string().valid("image", "pdf", "document").required(),
-        url: Joi.string().uri().required(),
+        url: Joi.string().required(),
         fileName: Joi.string().required(),
         size: Joi.number().max(10485760).required(), // 10MB max
       })
@@ -86,4 +86,3 @@ export const conversationIdSchema = Joi.object({
   user1: Joi.string().hex().length(24).required(),
   user2: Joi.string().hex().length(24).required(),
 });
-
