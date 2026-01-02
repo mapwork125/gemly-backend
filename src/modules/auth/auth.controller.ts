@@ -1,5 +1,9 @@
 import { asyncHandler } from "../../utils/asyncHandler.utility";
-import { RESPONSE_MESSAGES, USER_STATUS } from "../../utils/constants.utility";
+import {
+  RESPONSE_MESSAGES,
+  USER_ROLE,
+  USER_STATUS,
+} from "../../utils/constants.utility";
 import { success, fail } from "../../utils/response.utility";
 import authService from "./auth.service";
 
@@ -19,7 +23,7 @@ export const login = asyncHandler(async (req, res) => {
   const { user, token } = await authService.login(req.body);
   const status = user.status;
   const message =
-    user.status === USER_STATUS.APPROVED
+    user.status === USER_STATUS.APPROVED || user.role === USER_ROLE.ADMIN
       ? RESPONSE_MESSAGES.LOGIN_SUCCESS
       : RESPONSE_MESSAGES[user.status] || RESPONSE_MESSAGES.PENDING_KYC;
   return success(res, message, {}, 200, status, { token });

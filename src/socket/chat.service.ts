@@ -12,6 +12,7 @@ import {
   NOTIFICATION_TYPE,
   RESPONSE_MESSAGES,
 } from "../utils/constants.utility";
+import { CustomError } from "../utils/customError.utility";
 
 class ChatService {
   /**
@@ -73,9 +74,11 @@ class ChatService {
     }).select("name email role");
 
     if (participants.length !== 2) {
-      const error: any = new Error("Both participants must exist");
-      error.statusCode = 400;
-      throw error;
+      throw new CustomError(
+        "Both participants must exist",
+        "INVALID_VALUE",
+        400
+      );
     }
 
     // Validate context exists
@@ -83,9 +86,11 @@ class ChatService {
     const context = await (contextModel as any).findById(contextId);
 
     if (!context) {
-      const error: any = new Error(`${contextType} not found`);
-      error.statusCode = 404;
-      throw error;
+      const errorCode =
+        contextType === "REQUIREMENT"
+          ? "REQUIREMENT_NOT_FOUND"
+          : "DEAL_NOT_FOUND";
+      throw new CustomError(`${contextType} not found`, errorCode, 404);
     }
 
     // Create conversation
@@ -147,11 +152,11 @@ class ChatService {
     // Validate conversation exists and user is participant
     const conversation: any = await Conversation.findById(conversationId);
     if (!conversation) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found"
+      throw new CustomError(
+        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found",
+        "CONVERSATION_NOT_FOUND",
+        404
       );
-      error.statusCode = 404;
-      throw error;
     }
 
     const isParticipant = conversation.participantIds.some(
@@ -159,11 +164,11 @@ class ChatService {
     );
 
     if (!isParticipant) {
-      const error: any = new Error(
-        "User is not a participant of this conversation"
+      throw new CustomError(
+        "User is not a participant of this conversation",
+        "NOT_CONVERSATION_PARTICIPANT",
+        403
       );
-      error.statusCode = 403;
-      throw error;
     }
 
     // Create message
@@ -246,11 +251,11 @@ class ChatService {
       });
 
     if (!conversation) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found"
+      throw new CustomError(
+        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found",
+        "CONVERSATION_NOT_FOUND",
+        404
       );
-      error.statusCode = 404;
-      throw error;
     }
 
     const isParticipant = conversation.participantIds.some(
@@ -258,9 +263,11 @@ class ChatService {
     );
 
     if (!isParticipant) {
-      const error: any = new Error("Unauthorized to view this conversation");
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        "Unauthorized to view this conversation",
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // Build query
@@ -611,11 +618,11 @@ class ChatService {
     const conversation: any = await Conversation.findById(conversationId);
 
     if (!conversation) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found"
+      throw new CustomError(
+        RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found",
+        "CONVERSATION_NOT_FOUND",
+        404
       );
-      error.statusCode = 404;
-      throw error;
     }
 
     // Check if user is a participant
@@ -624,11 +631,11 @@ class ChatService {
     );
 
     if (!isParticipant) {
-      const error: any = new Error(
-        "Not authorized to delete this conversation"
+      throw new CustomError(
+        "Not authorized to delete this conversation",
+        "NOT_CONVERSATION_PARTICIPANT",
+        403
       );
-      error.statusCode = 403;
-      throw error;
     }
 
     // Mark conversation as archived for this user
@@ -656,9 +663,11 @@ class ChatService {
     const conversation = await Conversation.findById(conversationId);
 
     if (!conversation) {
-      const error: any = new Error("Conversation not found");
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        "Conversation not found",
+        "CONVERSATION_NOT_FOUND",
+        404
+      );
     }
 
     const isParticipant = conversation.participantIds.some(
@@ -666,11 +675,11 @@ class ChatService {
     );
 
     if (!isParticipant) {
-      const error: any = new Error(
-        "Not authorized to search this conversation"
+      throw new CustomError(
+        "Not authorized to search this conversation",
+        "NOT_CONVERSATION_PARTICIPANT",
+        403
       );
-      error.statusCode = 403;
-      throw error;
     }
 
     // Search messages using text index for better performance

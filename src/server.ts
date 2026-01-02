@@ -32,6 +32,11 @@ const ensureAdminExists = async () => {
     });
     console.log("Admin user created successfully.");
   } else {
+    if (existingAdmin.status !== USER_STATUS.APPROVED) {
+      existingAdmin.status = USER_STATUS.APPROVED;
+      await existingAdmin.save();
+      console.log("Admin user status updated to APPROVED.");
+    }
     console.log("Admin user already exists.");
   }
 };

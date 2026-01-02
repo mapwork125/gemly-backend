@@ -7,6 +7,7 @@ import {
   NOTIFICATION_CATEGORY,
   USER_ROLE,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 // Placement daily rates
 const DAILY_RATES: Record<string, number> = {
@@ -30,7 +31,11 @@ class AdsService {
     ).length;
     if (imageSize > 2 * 1024 * 1024) {
       // 2MB
-      throw new Error("Image size exceeds 2MB limit");
+      throw new CustomError(
+        "Image size exceeds 2MB limit",
+        "ATTACHMENT_TOO_LARGE",
+        422
+      );
     }
 
     // Calculate estimated cost
@@ -150,7 +155,7 @@ class AdsService {
     );
 
     if (!ad) {
-      throw new Error("Advertisement not found");
+      throw new CustomError("Advertisement not found", "AD_NOT_FOUND", 404);
     }
 
     return {
@@ -167,11 +172,15 @@ class AdsService {
 
     const ad = await Advertisement.findById(adId);
     if (!ad) {
-      throw new Error("Advertisement not found");
+      throw new CustomError("Advertisement not found", "AD_NOT_FOUND", 404);
     }
 
     if (ad.status !== "PENDING") {
-      throw new Error(`Advertisement already ${ad.status.toLowerCase()}`);
+      throw new CustomError(
+        `Advertisement already ${ad.status.toLowerCase()}`,
+        "INVALID_AD_STATUS",
+        422
+      );
     }
 
     if (action === "APPROVE") {
@@ -254,7 +263,7 @@ class AdsService {
       };
     }
 
-    throw new Error("Invalid action");
+    throw new CustomError("Invalid action", "INVALID_VALUE", 400);
   }
 
   /**

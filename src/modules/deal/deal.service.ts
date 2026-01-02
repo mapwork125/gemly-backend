@@ -10,6 +10,7 @@ import {
   NOTIFICATION_CATEGORY,
   BID_STATUS,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 import { generateDealPDF, formatDealForPDF } from "../../utils/dealPdf.utility";
 import fs from "fs";
 import path from "path";
@@ -25,18 +26,20 @@ class DealService {
       .lean();
 
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Verify bid status is ACCEPTED
     if (bid.status !== BID_STATUS.ACCEPTED) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_ACCEPTED);
-      error.code = "BID_NOT_ACCEPTED";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_ACCEPTED,
+        "BID_NOT_ACCEPTED",
+        409
+      );
     }
 
     // 3. Find associated requirement
@@ -50,27 +53,30 @@ class DealService {
       .lean();
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
-      error.code = "REQUIREMENT_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // 4. Verify user is the requirement owner (buyer)
     if (requirement.userId._id.toString() !== user._id.toString()) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // 5. Check if deal already exists for this bid
     const existingDeal = await Deal.findOne({ bid: bidId });
     if (existingDeal) {
-      const error: any = new Error(RESPONSE_MESSAGES.DEAL_ALREADY_EXISTS);
-      error.code = "DEAL_ALREADY_EXISTS";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.DEAL_ALREADY_EXISTS,
+        "DEAL_ALREADY_EXISTS",
+        409
+      );
     }
 
     // 6. Create immutable snapshots
@@ -274,10 +280,11 @@ class DealService {
       .lean();
 
     if (!deal) {
-      const error: any = new Error(RESPONSE_MESSAGES.DEAL_NOT_FOUND);
-      error.code = "DEAL_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.DEAL_NOT_FOUND,
+        "DEAL_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Check access permissions (only buyer, seller, or admin)
@@ -286,10 +293,11 @@ class DealService {
     const isAdmin = user.role === "2"; // Admin role
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // 3. Return comprehensive deal information
@@ -459,10 +467,11 @@ class DealService {
       .lean();
 
     if (!deal) {
-      const error: any = new Error(RESPONSE_MESSAGES.DEAL_NOT_FOUND);
-      error.code = "DEAL_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.DEAL_NOT_FOUND,
+        "DEAL_NOT_FOUND",
+        404
+      );
     }
 
     // Check access permissions (only buyer, seller, or admin)
@@ -471,34 +480,34 @@ class DealService {
     const isAdmin = user.role === "2";
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // Check if PDF URL exists
     if (!deal.pdfUrl || !deal.pdfFilePath) {
-      const error: any = new Error("PDF not yet generated");
-      error.code = "PDF_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError("PDF not yet generated", "PDF_NOT_FOUND", 404);
     }
 
     // Check if PDF has expired
     if (deal.pdfExpiryTime && new Date() > new Date(deal.pdfExpiryTime)) {
-      const error: any = new Error("PDF has expired and been deleted");
-      error.code = "PDF_EXPIRED";
-      error.statusCode = 410; // Gone
-      throw error;
+      throw new CustomError(
+        "PDF has expired and been deleted",
+        "PDF_EXPIRED",
+        410
+      );
     }
 
     // Check if file exists on filesystem
     if (!fs.existsSync(deal.pdfFilePath)) {
-      const error: any = new Error("PDF file not found on server");
-      error.code = "PDF_FILE_MISSING";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        "PDF file not found on server",
+        "PDF_FILE_MISSING",
+        404
+      );
     }
 
     // Read and return PDF file

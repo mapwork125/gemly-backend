@@ -7,28 +7,35 @@ import {
   STATUS,
   RESPONSE_MESSAGES,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 class BidService {
   async place(requirementId, user, body) {
     // 1. Verify requirement exists and is ACTIVE
     const requirement: any = await Requirement.findById(requirementId);
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     if (requirement.status !== STATUS.ACTIVE) {
-      const error: any = new Error(RESPONSE_MESSAGES.REQUIREMENT_CLOSED);
-      error.code = "BID_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_CLOSED,
+        "BID_NOT_ALLOWED",
+        403
+      );
     }
 
     // 2. Verify user is not the requirement owner
     if (requirement.userId.toString() === user._id.toString()) {
-      const error: any = new Error("Cannot bid on your own requirement");
-      error.code = "BID_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        "Cannot bid on your own requirement",
+        "BID_NOT_ALLOWED",
+        403
+      );
     }
 
     // 3. Check if user already has active bid on this requirement
@@ -38,12 +45,11 @@ class BidService {
     });
 
     if (existingBid) {
-      const error: any = new Error(
-        "You have already placed a bid on this requirement"
+      throw new CustomError(
+        "You have already placed a bid on this requirement",
+        "DUPLICATE_BID",
+        409
       );
-      error.code = "DUPLICATE_BID";
-      error.statusCode = 409;
-      throw error;
     }
 
     // 11. Calculate pricePerCarat if not provided
@@ -105,7 +111,11 @@ class BidService {
     // 1. Verify requirement exists
     const requirement: any = await Requirement.findById(requirementId);
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Check if current user is requirement owner
@@ -322,10 +332,11 @@ class BidService {
       .lean();
 
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // Find the requirement this bid belongs to
@@ -333,10 +344,11 @@ class BidService {
     if (requirementId) {
       requirement = await Requirement.findById(requirementId);
       if (!requirement || !requirement.bids.includes(bidId)) {
-        const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-        error.code = "BID_NOT_FOUND";
-        error.statusCode = 404;
-        throw error;
+        throw new CustomError(
+          RESPONSE_MESSAGES.BID_NOT_FOUND,
+          "BID_NOT_FOUND",
+          404
+        );
       }
     } else {
       const requirements = await Requirement.find({ bids: bidId });
@@ -344,10 +356,11 @@ class BidService {
     }
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // Check access levels
@@ -496,18 +509,20 @@ class BidService {
     // 1. Find bid
     const bid: any = await Bid.findById(bidId);
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Only bidder can update their own bid
     if (bid.bidder.toString() !== user._id.toString()) {
-      const error: any = new Error("Only bid owner can update bid");
-      error.code = "UPDATE_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        "Only bid owner can update bid",
+        "UPDATE_NOT_ALLOWED",
+        403
+      );
     }
 
     // 3. Find requirement and validate
@@ -515,10 +530,11 @@ class BidService {
     if (requirementId) {
       requirement = await Requirement.findById(requirementId);
       if (!requirement || !requirement.bids.includes(bidId)) {
-        const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-        error.code = "BID_NOT_FOUND";
-        error.statusCode = 404;
-        throw error;
+        throw new CustomError(
+          RESPONSE_MESSAGES.BID_NOT_FOUND,
+          "BID_NOT_FOUND",
+          404
+        );
       }
     } else {
       const requirements = await Requirement.find({ bids: bidId });
@@ -526,20 +542,20 @@ class BidService {
     }
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 4. Cannot update if status is ACCEPTED or REJECTED
     if (bid.status === "ACCEPTED" || bid.status === "REJECTED") {
-      const error: any = new Error(
-        `Cannot update bid with status ${bid.status}`
+      throw new CustomError(
+        `Cannot update bid with status ${bid.status}`,
+        "UPDATE_NOT_ALLOWED",
+        403
       );
-      error.code = "UPDATE_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 5. Cannot update if requirement is EXPIRED or CLOSED
@@ -549,12 +565,11 @@ class BidService {
       requirement.status === STATUS.FULFILLED ||
       requirement.status === STATUS.CANCELLED
     ) {
-      const error: any = new Error(
-        `Cannot update bid for ${requirement.status.toLowerCase()} requirement`
+      throw new CustomError(
+        `Cannot update bid for ${requirement.status.toLowerCase()} requirement`,
+        "UPDATE_NOT_ALLOWED",
+        403
       );
-      error.code = "UPDATE_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 6. Recalculate pricePerCarat if amount or carat changed
@@ -612,26 +627,29 @@ class BidService {
     // 1. Find bid
     const bid: any = await Bid.findById(bidId);
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Only bidder can withdraw their own bid
     if (bid.bidder.toString() !== user._id.toString()) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // 3. Cannot withdraw if status is ACCEPTED
     if (bid.status === "ACCEPTED") {
-      const error: any = new Error(RESPONSE_MESSAGES.WITHDRAW_NOT_ALLOWED);
-      error.code = "WITHDRAW_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.WITHDRAW_NOT_ALLOWED,
+        "WITHDRAW_NOT_ALLOWED",
+        403
+      );
     }
 
     // 4. Find requirement
@@ -639,10 +657,11 @@ class BidService {
     if (requirementId) {
       requirement = await Requirement.findById(requirementId);
       if (!requirement || !requirement.bids.includes(bidId)) {
-        const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-        error.code = "BID_NOT_FOUND";
-        error.statusCode = 404;
-        throw error;
+        throw new CustomError(
+          RESPONSE_MESSAGES.BID_NOT_FOUND,
+          "BID_NOT_FOUND",
+          404
+        );
       }
     } else {
       const requirements = await Requirement.find({ bids: bidId });
@@ -650,10 +669,11 @@ class BidService {
     }
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 5. Set status to WITHDRAWN (soft delete)
@@ -697,10 +717,11 @@ class BidService {
       .lean();
 
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Find requirement
@@ -708,10 +729,11 @@ class BidService {
     if (requirementId) {
       requirement = await Requirement.findById(requirementId);
       if (!requirement || !requirement.bids.includes(bidId)) {
-        const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-        error.code = "BID_NOT_FOUND";
-        error.statusCode = 404;
-        throw error;
+        throw new CustomError(
+          RESPONSE_MESSAGES.BID_NOT_FOUND,
+          "BID_NOT_FOUND",
+          404
+        );
       }
     } else {
       const requirements = await Requirement.find({ bids: bidId });
@@ -719,41 +741,46 @@ class BidService {
     }
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
-      error.code = "REQUIREMENT_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // 3. Only requirement owner can accept bids
     if (requirement.userId.toString() !== user._id.toString()) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // 4. Cannot accept if already accepted or rejected
     if (bid.status === "ACCEPTED") {
-      const error: any = new Error(RESPONSE_MESSAGES.ALREADY_ACCEPTED);
-      error.code = "ALREADY_ACCEPTED";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ALREADY_ACCEPTED,
+        "ALREADY_ACCEPTED",
+        409
+      );
     }
 
     if (bid.status === "REJECTED") {
-      const error: any = new Error(RESPONSE_MESSAGES.ALREADY_REJECTED);
-      error.code = "ALREADY_REJECTED";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ALREADY_REJECTED,
+        "ALREADY_REJECTED",
+        409
+      );
     }
 
     // 5. Cannot accept if requirement is not ACTIVE
     if (requirement.status !== STATUS.ACTIVE) {
-      const error: any = new Error(RESPONSE_MESSAGES.ACCEPT_NOT_ALLOWED);
-      error.code = "ACCEPT_NOT_ALLOWED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ACCEPT_NOT_ALLOWED,
+        "ACCEPT_NOT_ALLOWED",
+        403
+      );
     }
 
     // 6. Update bid status to ACCEPTED
@@ -804,10 +831,11 @@ class BidService {
       .lean();
 
     if (!bid) {
-      const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-      error.code = "BID_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.BID_NOT_FOUND,
+        "BID_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Find requirement
@@ -815,10 +843,11 @@ class BidService {
     if (requirementId) {
       requirement = await Requirement.findById(requirementId);
       if (!requirement || !requirement.bids.includes(bidId)) {
-        const error: any = new Error(RESPONSE_MESSAGES.BID_NOT_FOUND);
-        error.code = "BID_NOT_FOUND";
-        error.statusCode = 404;
-        throw error;
+        throw new CustomError(
+          RESPONSE_MESSAGES.BID_NOT_FOUND,
+          "BID_NOT_FOUND",
+          404
+        );
       }
     } else {
       const requirements = await Requirement.find({ bids: bidId });
@@ -826,33 +855,37 @@ class BidService {
     }
 
     if (!requirement) {
-      const error: any = new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
-      error.code = "REQUIREMENT_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // 3. Only requirement owner can reject bids
     if (requirement.userId.toString() !== user._id.toString()) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // 4. Cannot reject if already accepted or rejected
     if (bid.status === "ACCEPTED") {
-      const error: any = new Error(RESPONSE_MESSAGES.ALREADY_ACCEPTED);
-      error.code = "ALREADY_ACCEPTED";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ALREADY_ACCEPTED,
+        "ALREADY_ACCEPTED",
+        409
+      );
     }
 
     if (bid.status === "REJECTED") {
-      const error: any = new Error(RESPONSE_MESSAGES.ALREADY_REJECTED);
-      error.code = "ALREADY_REJECTED";
-      error.statusCode = 409;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ALREADY_REJECTED,
+        "ALREADY_REJECTED",
+        409
+      );
     }
 
     // 5. Update bid status to REJECTED and save rejection reason

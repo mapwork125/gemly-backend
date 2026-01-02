@@ -1,6 +1,7 @@
 import { asyncHandler } from "../../utils/asyncHandler.utility";
 import { success } from "../../utils/response.utility";
 import { RESPONSE_MESSAGES } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 export const get = asyncHandler(async (req, res) => {
   const settings = req.user.notificationSettings;
@@ -15,7 +16,11 @@ export const update = asyncHandler(async (req, res) => {
   if (updatedSettings.caratRanges) {
     updatedSettings.caratRanges.forEach((range) => {
       if (range.min >= range.max) {
-        throw new Error(RESPONSE_MESSAGES.INVALID_RANGE);
+        throw new CustomError(
+          RESPONSE_MESSAGES.INVALID_RANGE,
+          "INVALID_RANGE",
+          400
+        );
       }
     });
   }
@@ -23,7 +28,11 @@ export const update = asyncHandler(async (req, res) => {
   if (updatedSettings.budgetRanges) {
     updatedSettings.budgetRanges.forEach((range) => {
       if (range.min >= range.max) {
-        throw new Error(RESPONSE_MESSAGES.INVALID_RANGE);
+        throw new CustomError(
+          RESPONSE_MESSAGES.INVALID_RANGE,
+          "INVALID_RANGE",
+          400
+        );
       }
     });
   }
@@ -33,7 +42,11 @@ export const update = asyncHandler(async (req, res) => {
     updatedSettings.quietHours &&
     updatedSettings.quietHours.startTime === updatedSettings.quietHours.endTime
   ) {
-    throw new Error(RESPONSE_MESSAGES.INVALID_VALUE);
+    throw new CustomError(
+      RESPONSE_MESSAGES.INVALID_VALUE,
+      "INVALID_VALUE",
+      400
+    );
   }
 
   user.notificationSettings = {

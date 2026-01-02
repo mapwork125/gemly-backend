@@ -10,6 +10,7 @@ import {
   RESPONSE_MESSAGES,
   STATUS,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 class ReqService {
   async index(req) {
@@ -73,7 +74,11 @@ class ReqService {
     });
 
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.notFound(MODULES.REQUIREMENT));
+      throw new CustomError(
+        RESPONSE_MESSAGES.notFound(MODULES.REQUIREMENT),
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // Track view if:
@@ -243,17 +248,29 @@ class ReqService {
     });
 
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // Cannot edit if not ACTIVE
     if (requirement.status !== STATUS.ACTIVE) {
-      throw new Error(RESPONSE_MESSAGES.EDIT_NOT_ALLOWED);
+      throw new CustomError(
+        RESPONSE_MESSAGES.EDIT_NOT_ALLOWED,
+        "EDIT_NOT_ALLOWED",
+        403
+      );
     }
 
     // Cannot edit if deadline has passed
     if (requirement.endDate < new Date()) {
-      throw new Error(RESPONSE_MESSAGES.EDIT_NOT_ALLOWED);
+      throw new CustomError(
+        RESPONSE_MESSAGES.EDIT_NOT_ALLOWED,
+        "EDIT_NOT_ALLOWED",
+        403
+      );
     }
 
     // If bids exist, notify all bidders about the update
@@ -285,19 +302,29 @@ class ReqService {
     });
 
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // Cannot delete FULFILLED requirements
     if (requirement.status === STATUS.FULFILLED) {
-      throw new Error(
-        "Cannot delete fulfilled requirement. Contact support if needed."
+      throw new CustomError(
+        "Cannot delete fulfilled requirement. Contact support if needed.",
+        "DELETE_NOT_ALLOWED",
+        403
       );
     }
 
     // Cannot delete ACTIVE requirements with bids
     if (requirement.status === STATUS.ACTIVE && requirement.bids.length > 0) {
-      throw new Error(RESPONSE_MESSAGES.DELETE_NOT_ALLOWED);
+      throw new CustomError(
+        RESPONSE_MESSAGES.DELETE_NOT_ALLOWED,
+        "DELETE_NOT_ALLOWED",
+        403
+      );
     }
 
     // Soft delete - set status to CANCELLED
@@ -315,13 +342,19 @@ class ReqService {
     const requirement = await Requirement.findOne({ _id: id, userId: userid });
 
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // Only ACTIVE and EXPIRED requirements can be closed
     if (![STATUS.ACTIVE, STATUS.EXPIRED].includes(requirement.status)) {
-      throw new Error(
-        `Cannot close requirement with status ${requirement.status}`
+      throw new CustomError(
+        `Cannot close requirement with status ${requirement.status}`,
+        "ACCESS_DENIED",
+        403
       );
     }
 
@@ -338,7 +371,11 @@ class ReqService {
     const requirement = await Requirement.findById(id);
 
     if (!requirement) {
-      throw new Error(RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REQUIREMENT_NOT_FOUND,
+        "REQUIREMENT_NOT_FOUND",
+        404
+      );
     }
 
     // Validate status transitions
@@ -356,8 +393,10 @@ class ReqService {
     };
 
     if (!validTransitions[requirement.status]?.includes(newStatus)) {
-      throw new Error(
-        `Invalid status transition from ${requirement.status} to ${newStatus}`
+      throw new CustomError(
+        `Invalid status transition from ${requirement.status} to ${newStatus}`,
+        "ACCESS_DENIED",
+        403
       );
     }
 

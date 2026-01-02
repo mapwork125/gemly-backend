@@ -7,6 +7,7 @@ import {
   RESPONSE_MESSAGES,
   USER_STATUS,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 import mongoose from "mongoose";
 
 class AdminService {
@@ -105,7 +106,11 @@ class AdminService {
     const user: any = await User.findById(userId);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new CustomError(
+        RESPONSE_MESSAGES.USER_NOT_FOUND,
+        "USER_NOT_FOUND",
+        404
+      );
     }
 
     // Update user status

@@ -1,6 +1,7 @@
 import { asyncHandler } from "../../utils/asyncHandler.utility";
 import { success } from "../../utils/response.utility";
 import service from "./bid.service";
+import { CustomError } from "../../utils/customError.utility";
 
 export const placeBid = asyncHandler(async (req, res) => {
   const result = await service.place(
@@ -82,7 +83,7 @@ export const updateBid = asyncHandler(async (req, res) => {
   );
 
   if (!result.bid) {
-    throw new Error("Bid not found");
+    throw new CustomError("Bid not found", "BID_NOT_FOUND", 404);
   }
 
   return res.status(200).json({

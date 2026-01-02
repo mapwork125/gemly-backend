@@ -2,13 +2,19 @@ import User from "../../models/User.model";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../../utils/jwt.utility";
 import { RESPONSE_MESSAGES, USER_STATUS } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 class AuthService {
   async register(data) {
     const hashed = await bcrypt.hash(data.password, 10);
     data.password = hashed;
     let user: any = await User.findOne({ email: data.email });
-    if (user) throw new Error(RESPONSE_MESSAGES.EMAIL_ALREADY_EXISTS);
+    if (user)
+      throw new CustomError(
+        RESPONSE_MESSAGES.EMAIL_ALREADY_EXISTS,
+        "EMAIL_ALREADY_EXISTS",
+        409
+      );
     user = await User.create(data);
     const token = generateToken({
       id: user._id,
@@ -21,18 +27,36 @@ class AuthService {
   async login({ email, password }) {
     // user check
     let user: any = await User.findOne({ email });
-    if (!user) throw new Error(RESPONSE_MESSAGES.EMAIL_NOT_MATCH);
+    if (!user)
+      throw new CustomError(
+        RESPONSE_MESSAGES.EMAIL_NOT_MATCH,
+        "EMAIL_NOT_MATCH",
+        401
+      );
 
     // password check
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) throw new Error(RESPONSE_MESSAGES.PASSWORD_NOT_MATCH);
+    if (!ok)
+      throw new CustomError(
+        RESPONSE_MESSAGES.PASSWORD_NOT_MATCH,
+        "PASSWORD_NOT_MATCH",
+        401
+      );
 
     // status validation
     if (user.status === USER_STATUS.REJECTED) {
-      throw new Error(RESPONSE_MESSAGES.REJECTED);
+      throw new CustomError(
+        RESPONSE_MESSAGES.REJECTED,
+        "ACCOUNT_REJECTED",
+        403
+      );
     }
     if (user.status === USER_STATUS.SUSPENDED) {
-      throw new Error(RESPONSE_MESSAGES.SUSPENDED);
+      throw new CustomError(
+        RESPONSE_MESSAGES.SUSPENDED,
+        "ACCOUNT_SUSPENDED",
+        403
+      );
     }
 
     // token
@@ -61,7 +85,12 @@ class AuthService {
   }
   async updateProfile(id, body) {
     let user = await User.findById(id);
-    if (!user) throw new Error(RESPONSE_MESSAGES.USER_NOT_FOUND);
+    if (!user)
+      throw new CustomError(
+        RESPONSE_MESSAGES.USER_NOT_FOUND,
+        "USER_NOT_FOUND",
+        404
+      );
 
     //@ts-ignore
     if (body?.phoneNumber) user?.kyc["phoneNumber"] = body.phoneNumber;

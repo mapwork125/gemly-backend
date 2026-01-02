@@ -1,1864 +1,2170 @@
 {
-  "info": {
-    "_postman_id": "gemly-backend-api-collection",
-    "name": "Gemly Backend API - Complete Collection",
-    "description": "Complete API collection for Gemly Backend with all modules and endpoints synchronized with code. All values use proper constants from constants.utility.ts:\n\n**User Types:** buyer, seller\n**User Status:** PENDING_KYC, PENDING_ADMIN_APPROVAL, APPROVED, REJECTED, SUSPENDED\n\n**Diamond Types:** Natural, Lab-Grown, Simulated\n**Diamond Shapes:** Round, Princess, Emerald, Oval, Asscher, Marquise, Pear, Radiant, Cushion, Heart, etc.\n**Cut Grades:** Ideal, Excellent, Very Good, Good, Fair, Poor\n**Color Grades:** D-Z (Standard), or Fancy Color combinations\n**Clarity Grades:** FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, SI3, I1, I2, I3\n**Polish/Symmetry:** Excellent, Very Good, Good, Fair, Poor\n**Fluorescence:** None, Faint, Medium, Strong, Very Strong\n**Treatment Status:** Untreated, Treated, Any\n**Certification Labs:** GIA, AGS, IGI, HRD, GCAL, EGL USA, etc.\n\n**Currency:** USD, EUR, GBP, AUD, CAD, INR, JPY, CNY\n**Payment Methods:** Wire Transfer, Credit Card, Bank Transfer, PayPal, Cryptocurrency, Check, Cash\n**Stock Status:** In Stock, Can Source, Made to Order\n\n**Requirement Status:** ACTIVE, EXPIRED, CLOSED, FULFILLED, CANCELLED\n**Bid Status:** PENDING, ACCEPTED, REJECTED, WITHDRAWN\n**Deal Status:** DEAL_CREATED, IN_PROGRESS, COMPLETED, CANCELLED\n**Escrow Status:** PENDING, HELD, RELEASED, REFUNDED, FAILED, CANCELLED, DISPUTED, EXPIRED\n\n**Inventory Status:** IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION\n**Inventory Cut:** EXCELLENT, VERY_GOOD, GOOD, FAIR, POOR\n**Inventory Color:** D, E, F, G, H, I, J, K, L, M\n**Inventory Clarity:** FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1\n**Inventory Shape:** ROUND, PRINCESS, CUSHION, EMERALD, OVAL, RADIANT, ASSCHER, MARQUISE, HEART, PEAR\n**Inventory Certificate:** GIA, IGI, AGS, HRD, EGL, NONE\n**Deletion Reasons:** DAMAGED, LOST, STOLEN, RETURNED_TO_SUPPLIER, OTHER\n\n**Ad Placements:** HOME_BANNER, SEARCH_SIDEBAR, LISTING_TOP, FOOTER\n**Ad Status:** PENDING, APPROVED, REJECTED, EXPIRED\n\n**Rating Abuse Reasons:** SPAM, PROFANITY, HARASSMENT, FALSE_INFORMATION, OFF_TOPIC, OTHER\n**Notification Frequency:** Instant, Hourly Digest, Daily Digest, Weekly Digest\n**Intended Use:** Engagement Ring, Wedding Band, Anniversary, Earrings, Necklace, Bracelet, Investment, Gift, Collection, Resale, Other",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "25710894",
-    "_collection_link": "https://codefighter.postman.co/workspace/Personal-Workspace~5735433a-98a6-495c-b2c7-b0b5df0c8e5b/collection/25710894-94de93a2-62f5-4ef0-8af7-467ee0e2377f?action=share&source=collection_link&creator=25710894"
-  },
-  "item": [
-    {
-      "name": "Authentication",
-      "item": [
-        {
-          "name": "Register - Seller",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data.token) {",
-                  "        pm.collectionVariables.set('authToken', jsonData.data.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe 2\",\n  \"email\": \"john.seller2@gmail.com\",\n  \"password\": \"SecurePass123!\",\n  \"confirmPassword\": \"SecurePass123!\",\n  \"userType\": \"seller\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            },
-            "description": "Register a new seller account. Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number."
-          },
-          "response": []
-        },
-        {
-          "name": "Register - Buyer",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Alice Smith\",\n  \"email\": \"alice.buyer@example.com\",\n  \"password\": \"BuyerPass123!\",\n  \"confirmPassword\": \"BuyerPass123!\",\n  \"userType\": \"buyer\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
-            },
-            "description": "Register a new buyer account"
-          },
-          "response": []
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData && jsonData.token) {",
-                  "        pm.collectionVariables.set('authToken', jsonData.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"john.seller2@gmail.com\",\n  \"password\": \"SecurePass123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            },
-            "description": "Login with email and password. Returns JWT token and user status."
-          },
-          "response": []
-        },
-        {
-          "name": "Login Buyer",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData && jsonData.token) {",
-                  "        pm.collectionVariables.set('authToken', jsonData.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"alice.buyer@example.com\",\n  \"password\": \"BuyerPass123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            },
-            "description": "Login with email and password. Returns JWT token and user status."
-          },
-          "response": []
-        },
-        {
-          "name": "Admin Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData && jsonData.token) {",
-                  "        pm.collectionVariables.set('authToken', jsonData.token);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"admin.diamond@gmail.com\",\n  \"password\": \"diamondAdmin@123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
-            },
-            "description": "Login with email and password. Returns JWT token and user status."
-          },
-          "response": []
-        },
-        {
-          "name": "Verify Identity",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "document",
-                  "description": "Upload Aadhar or PAN document (JPEG, PNG, or PDF, max 20MB)",
-                  "type": "file",
-                  "src": "/C:/Users/yashp/Downloads/ahmet-yuksek-tT8cDqpHRmw-unsplash.jpg"
-                },
-                {
-                  "key": "fullName",
-                  "value": "John Doe",
-                  "type": "text"
-                },
-                {
-                  "key": "dateOfBirth",
-                  "value": "1990-01-15",
-                  "type": "text"
-                },
-                {
-                  "key": "phoneNumber",
-                  "value": "+1234567890",
-                  "type": "text"
-                },
-                {
-                  "key": "identityProof[proofType]",
-                  "value": "Aadhar",
-                  "description": "Aadhar or PAN",
-                  "type": "text"
-                },
-                {
-                  "key": "identityProof[proofNumber]",
-                  "value": "123456789012",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyName]",
-                  "value": "Diamond Corp",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyRegistrationNumber]",
-                  "value": "REG123456",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyAddress][line1]",
-                  "value": "123 Diamond Street",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyAddress][line2]",
-                  "value": "Suite 100",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyAddress][city]",
-                  "value": "New York",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyAddress][state]",
-                  "value": "NY",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyAddress][postalCode]",
-                  "value": "10001",
-                  "type": "text"
-                },
-                {
-                  "key": "companyDetails[companyCountry]",
-                  "value": "USA",
-                  "type": "text"
-                },
-                {
-                  "key": "businessType",
-                  "value": "Diamond Trading",
-                  "type": "text"
-                },
-                {
-                  "key": "diamondIndustryActivity",
-                  "value": "Wholesale diamond trading and certification services for 10+ years",
-                  "type": "text"
-                },
-                {
-                  "key": "isAuthorizedPerson",
-                  "value": "true",
-                  "type": "text"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/verify-identity",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verify-identity"]
-            },
-            "description": "Upload KYC documents and complete identity verification. Status changes to PENDING_ADMIN_APPROVAL."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Profile",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "profile"]
-            },
-            "description": "Get the authenticated user's profile information"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Profile",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"phoneNumber\": \"+1234567890\",\n  \"companyAddress\": {\n    \"line1\": \"456 New Street\",\n    \"line2\": \"Floor 2\",\n    \"city\": \"Los Angeles\",\n    \"state\": \"CA\",\n    \"postalCode\": \"90001\"\n  },\n  \"diamondIndustryActivity\": \"Specialized in certified diamond trading with 15 years experience\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "profile"]
-            },
-            "description": "Update user profile information"
-          },
-          "response": []
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
-            },
-            "description": "Logout and invalidate the current session token"
-          },
-          "response": []
-        }
-      ],
-      "description": "User registration, login, profile management, and identity verification"
-    },
-    {
-      "name": "Requirements",
-      "item": [
-        {
-          "name": "Create Requirement",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data._id) {",
-                  "        pm.collectionVariables.set('requirementId', jsonData.data._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Need 5ct D VVS1 Round Brilliant Diamond\",\n  \"description\": \"Looking for a high-quality 5 carat round brilliant diamond with GIA certification\",\n  \"details\": {\n    \"diamondType\": \"Natural\",\n    \"certified\": true,\n    \"preferredLabs\": [\"GIA\", \"IGI\"],\n    \"shapes\": [\"Round\"],\n    \"caratMin\": 4.5,\n    \"caratMax\": 5.5,\n    \"cutGrades\": [\"Excellent\", \"Ideal\"],\n    \"colorType\": \"Standard\",\n    \"colorGrades\": [\"D\", \"E\"],\n    \"clarityGrades\": [\"VVS1\", \"VVS2\", \"IF\"],\n    \"polish\": [\"Excellent\"],\n    \"symmetry\": [\"Excellent\"],\n    \"fluorescence\": [\"None\", \"Faint\"],\n    \"treatmentStatus\": \"Untreated\",\n    \"budgetMin\": 200000,\n    \"budgetMax\": 275000,\n    \"currency\": \"USD\",\n    \"deliveryTimeline\": \"2025-02-28T23:59:59Z\",\n    \"intendedUse\": \"Engagement Ring\",\n    \"conflictFree\": true\n  },\n//   \"additionalInfo\": \"Urgent requirement for an engagement ring. Looking for excellent cut quality with maximum brilliance.\",\n  \"endDate\": \"2026-02-28T23:59:59Z\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/requirements",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements"]
-            },
-            "description": "Create a new diamond requirement posting"
-          },
-          "response": []
-        },
-        {
-          "name": "List Requirements",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requirements?page=1&limit=20&sortBy=createdAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "status",
-                  "value": "ACTIVE",
-                  "description": "ACTIVE, EXPIRED, CLOSED, FULFILLED, CANCELLED",
-                  "disabled": true
-                },
-                {
-                  "key": "sortBy",
-                  "value": "createdAt",
-                  "description": "createdAt, budget, deadline"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc"
-                },
-                {
-                  "key": "search",
-                  "value": "",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Get all diamond requirements with filtering and pagination"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Requirement by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requirements/{{requirementId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements", "{{requirementId}}"]
-            },
-            "description": "Get detailed information about a specific requirement"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Requirement",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated: Premium 5ct Diamond Requirement\",\n  \"description\": \"Updated description with new specifications\",\n  \"endDate\": \"2026-03-31T23:59:59Z\",\n  \"startDate\": \"2025-01-15T00:00:00Z\",\n  \"tags\": [\"premium\", \"certified\", \"urgent\"],\n  \"details\": {\n    \"diamondType\": \"Natural\",\n    \"certified\": true,\n    \"preferredLabs\": [\"GIA\", \"AGS\"],\n    \"shapes\": [\"Round\", \"Cushion\"],\n    \"caratMin\": 4.8,\n    \"caratMax\": 5.5,\n    \"cutGrades\": [\"Excellent\", \"Ideal\"],\n    \"colorType\": \"Standard\",\n    \"colorGrades\": [\"D\", \"E\", \"F\"],\n    \"clarityGrades\": [\"IF\", \"VVS1\", \"VVS2\"],\n    \"polish\": [\"Excellent\"],\n    \"symmetry\": [\"Excellent\"],\n    \"fluorescence\": [\"None\", \"Faint\"],\n    \"treatmentStatus\": \"Untreated\",\n    \"budgetMin\": 220000,\n    \"budgetMax\": 300000,\n    \"currency\": \"USD\",\n    \"deliveryTimeline\": \"2025-03-15T23:59:59Z\",\n    \"intendedUse\": \"Engagement Ring\",\n    \"conflictFree\": true,\n    \"ethicalSourcing\": true\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/requirements/{{requirementId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements", "{{requirementId}}"]
-            },
-            "description": "Update an existing requirement (only by owner)"
-          },
-          "response": []
-        },
-        {
-          "name": "Close Requirement",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requirements/{{requirementId}}/close",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements", "{{requirementId}}", "close"]
-            },
-            "description": "Close a requirement (marks as CLOSED)"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Requirement",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/requirements/{{requirementId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["requirements", "{{requirementId}}"]
-            },
-            "description": "Delete a requirement (only by owner)"
-          },
-          "response": []
-        }
-      ],
-      "description": "Diamond requirement posting and management"
-    },
-    {
-      "name": "Bids",
-      "item": [
-        {
-          "name": "Place Bid",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data._id) {",
-                  "        pm.collectionVariables.set('bidId', jsonData.data._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"bidAmount\": 245000,\n  \"currency\": \"USD\",\n  \"negotiable\": false,\n  \"deliveryDays\": 7,\n  \"canMeetDeadline\": true,\n  \"shippingIncluded\": false,\n  \"insuranceIncluded\": false,\n  \"paymentTerms\": \"100% payment on delivery\",\n  \"acceptedPaymentMethods\": [\"Bank Transfer\"],\n  \"depositRequired\": false,\n  \"diamondType\": \"Natural\",\n  \"caratWeight\": 5.02,\n  \"shape\": \"Round\",\n  \"cutGrade\": \"Excellent\",\n  \"colorGrade\": \"D\",\n  \"clarityGrade\": \"VVS1\",\n  \"companyName\": \"Diamond Corp\",\n  \"contactPerson\": \"John Doe\",\n  \"contactEmail\": \"john@diamondcorp.com\",\n  \"contactPhone\": \"+1234567890\",\n  \"businessAddress\": {\n    \"street\": \"123 Diamond Street\",\n    \"city\": \"New York\",\n    \"country\": \"USA\",\n    \"postalCode\": \"10001\"\n  },\n  \"returnPolicy\": \"30-day money back guarantee\",\n  \"gradeGuarantee\": false,\n  \"stockStatus\": \"In Stock\",\n  \"locationOfDiamond\": \"New York, NY\",\n  \"canViewInPerson\": false,\n  \"agreedToTerms\": true\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}"]
-            },
-            "description": "Place a bid on a requirement"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Bids for Requirement",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}?sortBy=bidAmount&sortOrder=asc&status=PENDING",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}"],
-              "query": [
-                {
-                  "key": "sortBy",
-                  "value": "bidAmount",
-                  "description": "bidAmount, deliveryDays, createdAt, rating"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "asc"
-                },
-                {
-                  "key": "status",
-                  "value": "PENDING",
-                  "description": "PENDING, ACCEPTED, REJECTED, WITHDRAWN"
-                }
-              ]
-            },
-            "description": "Get all bids for a specific requirement"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Specific Bid",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}", "{{bidId}}"]
-            },
-            "description": "Get detailed information about a specific bid"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Bid",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n//   \"bidAmount\": 235000,\n//   \"negotiationNote\": \"Price reduced for immediate acceptance\"\n\n//    \"deliveryDays\": 3,\n//   \"shippingMethod\": \"Premium Express Delivery\",\n//   \"canMeetDeadline\": true\n\n//   \"certificateUrl\": \"https://gia.edu/report-check?reportno=2185123456\",\n//   \"videoUrl\": \"https://example.com/videos/updated-diamond.mp4\",\n//   \"imagesUrls\": [\n//     \"https://example.com/images/new-photo-1.jpg\",\n//     \"https://example.com/images/new-photo-2.jpg\",\n//     \"https://example.com/images/new-photo-3.jpg\"\n//   ]\n\n\n// \"contactPerson\": \"Jane Smith\",\n//   \"contactEmail\": \"jane@diamondcorp.com\",\n//   \"contactPhone\": \"+1234567891\"\n\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}", "{{bidId}}"]
-            },
-            "description": "Update a bid (only by bidder, before acceptance)"
-          },
-          "response": []
-        },
-        {
-          "name": "Accept Bid",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}/accept",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}", "{{bidId}}", "accept"]
-            },
-            "description": "Accept a bid (only by requirement owner)"
-          },
-          "response": []
-        },
-        {
-          "name": "Reject Bid",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}/reject",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}", "{{bidId}}", "reject"]
-            },
-            "description": "Reject a bid (only by requirement owner)"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Bid",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["bids", "{{requirementId}}", "{{bidId}}"]
-            },
-            "description": "Delete/withdraw a bid (only by bidder)"
-          },
-          "response": []
-        }
-      ],
-      "description": "Bid management for requirements"
-    },
-    {
-      "name": "Deals",
-      "item": [
-        {
-          "name": "Create Deal from Bid",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data._id) {",
-                  "        pm.collectionVariables.set('dealId', jsonData.data._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/deals/{{bidId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["deals", "{{bidId}}"]
-            },
-            "description": "Create a deal from an accepted bid"
-          },
-          "response": []
-        },
-        {
-          "name": "List Deals",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/deals?status=DEAL_CREATED",
-              "host": ["{{baseUrl}}"],
-              "path": ["deals"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1",
-                  "disabled": true
-                },
-                {
-                  "key": "limit",
-                  "value": "20",
-                  "disabled": true
-                },
-                {
-                  "key": "status",
-                  "value": "DEAL_CREATED",
-                  "description": "DEAL_CREATED, IN_PROGRESS, COMPLETED, CANCELLED"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "createdAt",
-                  "disabled": true
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Get all deals for the authenticated user"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Deal by ID",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/deals/{{dealId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["deals", "{{dealId}}"]
-            },
-            "description": "Get detailed information about a specific deal"
-          },
-          "response": []
-        },
-        {
-          "name": "Download Deal PDF",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/deals/{{dealId}}/pdf",
-              "host": ["{{baseUrl}}"],
-              "path": ["deals", "{{dealId}}", "pdf"]
-            },
-            "description": "Download deal agreement as PDF"
-          },
-          "response": []
-        }
-      ],
-      "description": "Deal management and contract generation"
-    },
-    {
-      "name": "Escrow",
-      "item": [
-        {
-          "name": "Initiate Escrow",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Idempotency-Key",
-                "value": "{{$guid}}",
-                "description": "Unique key to prevent duplicate transactions"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"amount\": 23500000,\n  \"currency\": \"USD\",\n  \"idempotencyKey\":\"550e8400-e29b-41d4-a716-446655440000\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/escrow/initiate",
-              "host": ["{{baseUrl}}"],
-              "path": ["escrow", "initiate"]
-            },
-            "description": "Initiate escrow and create Stripe payment intent"
-          },
-          "response": []
-        },
-        {
-          "name": "Release Escrow BUYER_CONFIRMATION",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Idempotency-Key",
-                "value": "{{$guid}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dealId\": \"{{dealId}}\",\n    \"confirmationType\": \"BUYER_CONFIRMATION\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/escrow/release",
-              "host": ["{{baseUrl}}"],
-              "path": ["escrow", "release"]
-            },
-            "description": "Release payment to seller (buyer action)"
-          },
-          "response": []
-        },
-        {
-          "name": "Release Escrow SELLER_CONFIRMATION",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Idempotency-Key",
-                "value": "{{$guid}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dealId\": \"{{dealId}}\",\n    \"confirmationType\": \"SELLER_CONFIRMATION\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/escrow/release",
-              "host": ["{{baseUrl}}"],
-              "path": ["escrow", "release"]
-            },
-            "description": "Release payment to seller (buyer action)"
-          },
-          "response": []
-        },
-        {
-          "name": "Refund Escrow",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "key": "Idempotency-Key",
-                "value": "{{$guid}}"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"reason\": \"DEAL_CANCELED\",\n  \"refundAmount\": 245000,\n  \"idempotencyKey\":\"550e8400-e29b-41d4-a716-446655440000\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/escrow/refund",
-              "host": ["{{baseUrl}}"],
-              "path": ["escrow", "refund"]
-            },
-            "description": "Refund payment to buyer (admin/dispute resolution)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Escrow Status",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/escrow/{{dealId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["escrow", "{{dealId}}"]
-            },
-            "description": "Get current escrow status for a deal"
-          },
-          "response": []
-        }
-      ],
-      "description": "Escrow payment management with Stripe"
-    },
-    {
-      "name": "Chat",
-      "item": [
-        {
-          "name": "Initiate Conversation",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data._id) {",
-                  "        pm.collectionVariables.set('conversationId', jsonData.data._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"participantIds\": [\"{{userId}}\", \"6950c81a48eef709ac6896c1\"],\n  \"contextType\": \"REQUIREMENT\",\n  \"contextId\": \"{{requirementId}}\",\n  \"initialMessage\": \"Hello, I'm interested in your diamond offer. Can we discuss the details?\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/chat/initiate",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "initiate"]
-            },
-            "description": "Initiate a new conversation between users"
-          },
-          "response": []
-        },
-        {
-          "name": "Send Message",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"conversationId\": \"{{conversationId}}\",\n  \"text\": \"Hello, I'm interested in your diamond offer. Can we discuss the details?\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/chat/send-message",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "send-message"]
-            },
-            "description": "Send a text message in a conversation"
-          },
-          "response": []
-        },
-        {
-          "name": "Send Message with Attachment",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\r\n    \"conversationId\" : \"{{conversationId}}\",\r\n    \"text\":\"Here's the certificate image\",\r\n    \"attachments\":[{\r\n        \"type\": \"image\",\r\n        \"url\": \"/uploads/file-1767115555052-680300939.jpg\",\r\n        \"fileName\": \"land-o-lakes-inc-7BXmH9YzNAI-unsplash.jpg\",\r\n        \"size\": 3629991\r\n    }]\r\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{baseUrl}}/chat/send-message",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "send-message"]
-            },
-            "description": "Send a message with file attachment (max 10MB)"
-          },
-          "response": []
-        },
-        {
-          "name": "Upload Attachment",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "file",
-                  "type": "file",
-                  "src": "/C:/Users/yashp/Downloads/land-o-lakes-inc-7BXmH9YzNAI-unsplash.jpg"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/chat/upload",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "upload"]
-            },
-            "description": "Send a message with file attachment (max 10MB)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Conversation Messages",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/chat/{{conversationId}}?page=1&limit=50",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "{{conversationId}}"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "50"
-                }
-              ]
-            },
-            "description": "Get all messages in a conversation"
-          },
-          "response": []
-        },
-        {
-          "name": "List Conversations",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/chat/conversations?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["chat", "conversations"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
-              ]
-            },
-            "description": "Get all conversations for authenticated user"
-          },
-          "response": []
-        }
-      ],
-      "description": "Real-time chat and messaging system"
-    },
-    {
-      "name": "Inventory",
-      "item": [
-        {
-          "name": "Create Inventory Item",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data._id) {",
-                  "        pm.collectionVariables.set('inventoryId', jsonData.data._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"diamondDetails\": {\n    \"carat\": 5.02,\n    \"cut\": \"EXCELLENT\",\n    \"color\": \"D\",\n    \"clarity\": \"VVS1\",\n    \"shape\": \"ROUND\",\n    \"certificate\": \"GIA\",\n    \"certificateNumber\": \"2185123456\"\n  },\n  \"pricing\": {\n    \"costPrice\": 230000,\n    \"sellingPrice\": 245000,\n    \"currency\": \"USD\"\n  },\n  \"location\": \"Vault A-123\",\n  \"status\": \"IN_LOCKER\",\n  \"notes\": \"Premium stone with excellent light performance\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/inventory",
-              "host": ["{{baseUrl}}"],
-              "path": ["inventory"]
-            },
-            "description": "Add a new diamond to inventory"
-          },
-          "response": []
-        },
-        {
-          "name": "List Inventory",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/inventory?page=1&limit=50&status=IN_LOCKER&sortBy=createdAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["inventory"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "50"
-                },
-                {
-                  "key": "status",
-                  "value": "IN_LOCKER",
-                  "description": "IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "createdAt",
-                  "description": "createdAt, carat, costPrice, sellingPrice, updatedAt"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc"
-                },
-                {
-                  "key": "shape",
-                  "value": "",
-                  "disabled": true
-                },
-                {
-                  "key": "caratMin",
-                  "value": "",
-                  "disabled": true
-                },
-                {
-                  "key": "caratMax",
-                  "value": "",
-                  "disabled": true
-                }
-              ]
-            },
-            "description": "Get inventory list with filtering"
-          },
-          "response": []
-        },
-        {
-          "name": "Quick Status Update (Barcode)",
-          "request": {
-            "method": "PATCH",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"RESERVED\", //IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION\n  \"location\": \"Vault A-123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/inventory/{{inventoryId}}/quick-status",
-              "host": ["{{baseUrl}}"],
-              "path": ["inventory", "{{inventoryId}}", "quick-status"]
-            },
-            "description": "Quick status update via barcode scanning"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Inventory Item",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"pricing\": {\n    \"costPrice\": 235000,\n    \"sellingPrice\": 250000,\n    \"currency\": \"USD\"\n  },\n  \"status\": \"IN_LOCKER\",\n  \"location\": \"Vault B-456\",\n  \"notes\": \"Price updated based on market conditions\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/inventory/{{inventoryId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["inventory", "{{inventoryId}}"]
-            },
-            "description": "Update inventory item details"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Inventory Item",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"notes\": \"Item sold externally\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/inventory/{{inventoryId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["inventory", "{{inventoryId}}"]
-            },
-            "description": "Soft delete an inventory item"
-          },
-          "response": []
-        }
-      ],
-      "description": "Diamond inventory management with barcode support"
-    },
-    {
-      "name": "Ratings",
-      "item": [
-        {
-          "name": "Submit Rating",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"rating\": 5,\n  \"categories\": {\n    \"communication\": 5,\n    \"productQuality\": 5,\n    \"delivery\": 5,\n    \"pricing\": 5,\n    \"professionalism\": 5\n  },\n  \"review\": \"Excellent seller! Diamond was exactly as described. Very professional and responsive.\",\n  \"isAnonymous\": false\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ratings/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["ratings", "{{userId}}"]
-            },
-            "description": "Submit a rating for a user after a deal"
-          },
-          "response": []
-        },
-        {
-          "name": "Get User Ratings",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ratings/{{userId}}?page=1&limit=20&sortBy=createdAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["ratings", "{{userId}}"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "createdAt"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc"
-                }
-              ]
-            },
-            "description": "Get all ratings for a specific user"
-          },
-          "response": []
-        },
-        {
-          "name": "Report Abuse",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"reason\": \"FALSE_INFORMATION\",\n  \"description\": \"This review appears to be fraudulent\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ratings/69540e1255810124626c637f/report",
-              "host": ["{{baseUrl}}"],
-              "path": ["ratings", "69540e1255810124626c637f", "report"]
-            },
-            "description": "Report an abusive or fake rating"
-          },
-          "response": []
-        },
-        {
-          "name": "Report Abuse",
-          "protocolProfileBehavior": {
-            "disableBodyPruning": true
-          },
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"reason\": \"FALSE_INFORMATION\",\n  \"description\": \"This review appears to be fraudulent\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ratings/69540e1255810124626c637f/reports",
-              "host": ["{{baseUrl}}"],
-              "path": ["ratings", "69540e1255810124626c637f", "reports"]
-            },
-            "description": "Report an abusive or fake rating"
-          },
-          "response": []
-        }
-      ],
-      "description": "User rating and review system"
-    },
-    {
-      "name": "Advertisements",
-      "item": [
-        {
-          "name": "Submit Ad Request",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.data && jsonData.data.ad && jsonData.data.ad._id) {",
-                  "        pm.collectionVariables.set('adId', jsonData.data.ad._id);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Premium Diamond Collection\",\n  \"description\": \"Explore our exclusive certified diamond collection with GIA certificates\",\n  \"imageUrl\": \"https://example.com/images/ad-banner.jpg\",\n  \"linkUrl\": \"https://example.com/diamonds\",\n  \"duration\": 30,\n  \"placement\": \"HOME_BANNER\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ads/request",
-              "host": ["{{baseUrl}}"],
-              "path": ["ads", "request"]
-            },
-            "description": "Submit a new advertisement request (max 5 per day)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Active Ads",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ads?placement=HOME_BANNER&limit=5",
-              "host": ["{{baseUrl}}"],
-              "path": ["ads"],
-              "query": [
-                {
-                  "key": "placement",
-                  "value": "HOME_BANNER",
-                  "description": "HOME_BANNER, SEARCH_SIDEBAR, LISTING_TOP, FOOTER"
-                },
-                {
-                  "key": "limit",
-                  "value": "5"
-                }
-              ]
-            },
-            "description": "Get active advertisements (public endpoint)"
-          },
-          "response": []
-        },
-        {
-          "name": "Track Ad Click",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/ads/{{adId}}/click",
-              "host": ["{{baseUrl}}"],
-              "path": ["ads", "{{adId}}", "click"]
-            },
-            "description": "Track ad click for analytics"
-          },
-          "response": []
-        }
-      ],
-      "description": "Advertisement management for users"
-    },
-    {
-      "name": "Admin",
-      "item": [
-        {
-          "name": "List Users",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/users?page=1&limit=50&sortBy=createdAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "users"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "50"
-                },
-                {
-                  "key": "status",
-                  "value": "PENDING_ADMIN_APPROVAL",
-                  "description": "PENDING_KYC, PENDING_ADMIN_APPROVAL, APPROVED, REJECTED, SUSPENDED",
-                  "disabled": true
-                },
-                {
-                  "key": "userType",
-                  "value": "",
-                  "description": "buyer, seller",
-                  "disabled": true
-                },
-                {
-                  "key": "search",
-                  "value": "",
-                  "disabled": true
-                },
-                {
-                  "key": "sortBy",
-                  "value": "createdAt",
-                  "description": "createdAt, name, userType, status"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc"
-                }
-              ]
-            },
-            "description": "Get list of all users with filtering (Admin only)"
-          },
-          "response": []
-        },
-        {
-          "name": "Approve User",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"action\": \"APPROVE\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/users/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "users", "{{userId}}"]
-            },
-            "description": "Approve a user's KYC verification"
-          },
-          "response": []
-        },
-        {
-          "name": "Reject User",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"action\": \"REJECT\",\n  \"rejectionReason\": \"Invalid documents provided. Please upload clear copies of your identification.\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/users/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "users", "{{userId}}"]
-            },
-            "description": "Reject a user's KYC verification"
-          },
-          "response": []
-        },
-        {
-          "name": "Suspend User",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"action\": \"SUSPEND\",\n  \"suspensionReason\": \"Terms of service violation - fraudulent activity detected\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/users/{{userId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "users", "{{userId}}"]
-            },
-            "description": "Suspend a user account"
-          },
-          "response": []
-        },
-        {
-          "name": "List Ads (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/admin/ads?page=1&limit=50&status=PENDING&sortBy=submittedAt&sortOrder=desc",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "ads"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "50"
-                },
-                {
-                  "key": "status",
-                  "value": "PENDING",
-                  "description": "PENDING, APPROVED, REJECTED, EXPIRED"
-                },
-                {
-                  "key": "sortBy",
-                  "value": "submittedAt",
-                  "description": "submittedAt, title, placement, duration"
-                },
-                {
-                  "key": "sortOrder",
-                  "value": "desc"
-                }
-              ]
-            },
-            "description": "Get all advertisement requests (Admin only)"
-          },
-          "response": []
-        },
-        {
-          "name": "Approve Ad",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"action\": \"APPROVE\",\n  \"adminNotes\": \"Ad content looks good and meets guidelines\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ads/{{adId}}/approve",
-              "host": ["{{baseUrl}}"],
-              "path": ["ads", "{{adId}}", "approve"]
-            },
-            "description": "Approve an advertisement request"
-          },
-          "response": []
-        },
-        {
-          "name": "Reject Ad",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"action\": \"REJECT\",\n  \"adminNotes\": \"Image quality is poor and content violates guidelines\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/ads/{{adId}}/approve",
-              "host": ["{{baseUrl}}"],
-              "path": ["ads", "{{adId}}", "approve"]
-            },
-            "description": "Reject an advertisement request"
-          },
-          "response": []
-        }
-      ],
-      "description": "Admin panel for user and content management (Admin role required)"
-    },
-    {
-      "name": "Notifications",
-      "item": [
-        {
-          "name": "List Notifications",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications?page=1&limit=20",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications"],
-              "query": [
-                {
-                  "key": "page",
-                  "value": "1"
-                },
-                {
-                  "key": "limit",
-                  "value": "20"
-                }
-              ]
-            },
-            "description": "Get all notifications for authenticated user"
-          },
-          "response": []
-        },
-        {
-          "name": "Mark Notification as Read",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications/read/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications", "read", ":id"],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "69540ed055810124626c63b6"
-                }
-              ]
-            },
-            "description": "Mark a specific notification as read"
-          },
-          "response": []
-        },
-        {
-          "name": "Mark All Notifications as Read",
-          "request": {
-            "method": "PUT",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications/read-all",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications", "read-all"]
-            },
-            "description": "Mark all notifications as read"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Notification",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notifications/:id",
-              "host": ["{{baseUrl}}"],
-              "path": ["notifications", ":id"],
-              "variable": [
-                {
-                  "key": "id",
-                  "value": "6953fccb45461ed79eb3d082"
-                }
-              ]
-            },
-            "description": "Delete a specific notification"
-          },
-          "response": []
-        }
-      ],
-      "description": "User notification management"
-    },
-    {
-      "name": "Notification Settings",
-      "item": [
-        {
-          "name": "Get Notification Settings",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/notification-settings",
-              "host": ["{{baseUrl}}"],
-              "path": ["notification-settings"]
-            },
-            "description": "Get current notification preferences"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Notification Settings",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"enabled\": true,\n  \"channels\": {\n    \"inApp\": true,\n    \"email\": true,\n    \"emailDigest\": true,\n    \"emailAddress\": \"dealer@gemly.com\",\n    \"sms\": true,\n    \"phoneNumber\": \"+12025551234\",\n    \"push\": true\n  },\n  \"diamondTypes\": [\"Natural\", \"Lab-Grown\", \"Simulated\"],\n  \"labGrownMethods\": [\"CVD\", \"HPHT\"],\n  \"treatmentPreferences\": {\n    \"acceptUntreated\": true,\n    \"acceptTreated\": true,\n    \"acceptAny\": true\n  },\n  \"certificationFilter\": {\n    \"certifiedOnly\": false,\n    \"nonCertifiedOk\": true,\n    \"preferredLabs\": [\"GIA\", \"IGI\", \"AGS\", \"HRD\", \"EGL\"]\n  },\n  \"shapes\": [\"Round\", \"Princess\", \"Cushion\", \"Oval\", \"Emerald\", \"Pear\", \"Marquise\", \"Radiant\", \"Asscher\", \"Heart\"],\n  \"caratRanges\": [\n    {\n      \"min\": 0.5,\n      \"max\": 1.0,\n      \"description\": \"Small diamonds\"\n    },\n    {\n      \"min\": 1.0,\n      \"max\": 2.0,\n      \"description\": \"Standard engagement rings\"\n    },\n    {\n      \"min\": 2.0,\n      \"max\": 5.0,\n      \"description\": \"Premium stones\"\n    },\n    {\n      \"min\": 5.0,\n      \"max\": 10.0,\n      \"description\": \"Luxury pieces\"\n    }\n  ],\n  \"cutGrades\": [\"EXCELLENT\", \"VERY_GOOD\", \"GOOD\", \"FAIR\"],\n  \"colorGrades\": [\"D\", \"E\", \"F\", \"G\", \"H\", \"I\", \"J\", \"K\", \"L\", \"M\"],\n  \"clarityGrades\": [\"FL\", \"IF\", \"VVS1\", \"VVS2\", \"VS1\", \"VS2\", \"SI1\", \"SI2\", \"I1\", \"I2\"],\n  \"fancyColors\": {\n    \"enabled\": true,\n    \"hues\": [\"Pink\", \"Blue\", \"Yellow\", \"Green\", \"Orange\", \"Red\", \"Purple\", \"Brown\", \"Black\", \"Gray\", \"White\"],\n    \"intensities\": [\"Faint\", \"Very Light\", \"Light\", \"Fancy Light\", \"Fancy\", \"Fancy Intense\", \"Fancy Vivid\", \"Fancy Deep\", \"Fancy Dark\"],\n    \"naturalOnly\": false\n  },\n  \"budgetRanges\": [\n    {\n      \"min\": 1000,\n      \"max\": 5000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 5000,\n      \"max\": 15000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 15000,\n      \"max\": 50000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 50000,\n      \"max\": 200000,\n      \"currency\": \"USD\"\n    }\n  ],\n  \"geographicPreferences\": {\n    \"canShipTo\": [\"USA\", \"Canada\", \"UK\", \"Australia\", \"Germany\", \"France\", \"Japan\", \"Singapore\", \"UAE\", \"Hong Kong\"],\n    \"localOnly\": false,\n    \"international\": true\n  },\n  \"timingFilters\": {\n    \"minimumLeadTime\": 3,\n    \"maximumLeadTime\": 60,\n    \"urgentOnly\": false\n  },\n  \"advancedFilters\": {\n    \"conflictFreeOnly\": true,\n    \"canProvideMatchingPairs\": true,\n    \"acceptsTradeIns\": true,\n    \"minimumBudget\": 1000,\n    \"currency\": \"USD\",\n    \"intendedUses\": [\"ENGAGEMENT\", \"WEDDING\", \"ANNIVERSARY\", \"INVESTMENT\", \"JEWELRY\", \"LOOSE_STONE\"]\n  },\n  \"frequency\": \"Instant\",\n  \"quietHours\": {\n    \"enabled\": true,\n    \"timezone\": \"America/New_York\",\n    \"startTime\": \"22:00\",\n    \"endTime\": \"08:00\",\n    \"daysOfWeek\": [0, 6]\n  }\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/notification-settings",
-              "host": ["{{baseUrl}}"],
-              "path": ["notification-settings"]
-            },
-            "description": "Update notification preferences"
-          },
-          "response": []
-        }
-      ],
-      "description": "Manage notification preferences"
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
-      {
-        "key": "token",
-        "value": "{{authToken}}",
-        "type": "string"
-      }
-    ]
-  },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [""]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "baseUrl",
-      "value": "http://localhost:5001/api/v1",
-      "type": "string"
-    },
-    {
-      "key": "authToken",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "userId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "requirementId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "bidId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "dealId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "conversationId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "adId",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "inventoryId",
-      "value": "",
-      "type": "string"
-    }
-  ]
+	"info": {
+		"_postman_id": "94de93a2-62f5-4ef0-8af7-467ee0e2377f",
+		"name": "Gemly Backend API - Complete Collection",
+		"description": "Complete API collection for Gemly Backend with all modules and endpoints synchronized with code. All values use proper constants from constants.utility.ts:\n\n**User Types:** buyer, seller\n**User Status:** PENDING_KYC, PENDING_ADMIN_APPROVAL, APPROVED, REJECTED, SUSPENDED\n\n**Diamond Types:** Natural, Lab-Grown, Simulated\n**Diamond Shapes:** Round, Princess, Emerald, Oval, Asscher, Marquise, Pear, Radiant, Cushion, Heart, etc.\n**Cut Grades:** Ideal, Excellent, Very Good, Good, Fair, Poor\n**Color Grades:** D-Z (Standard), or Fancy Color combinations\n**Clarity Grades:** FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, SI3, I1, I2, I3\n**Polish/Symmetry:** Excellent, Very Good, Good, Fair, Poor\n**Fluorescence:** None, Faint, Medium, Strong, Very Strong\n**Treatment Status:** Untreated, Treated, Any\n**Certification Labs:** GIA, AGS, IGI, HRD, GCAL, EGL USA, etc.\n\n**Currency:** USD, EUR, GBP, AUD, CAD, INR, JPY, CNY\n**Payment Methods:** Wire Transfer, Credit Card, Bank Transfer, PayPal, Cryptocurrency, Check, Cash\n**Stock Status:** In Stock, Can Source, Made to Order\n\n**Requirement Status:** ACTIVE, EXPIRED, CLOSED, FULFILLED, CANCELLED\n**Bid Status:** PENDING, ACCEPTED, REJECTED, WITHDRAWN\n**Deal Status:** DEAL_CREATED, IN_PROGRESS, COMPLETED, CANCELLED\n**Escrow Status:** PENDING, HELD, RELEASED, REFUNDED, FAILED, CANCELLED, DISPUTED, EXPIRED\n\n**Inventory Status:** IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION\n**Inventory Cut:** EXCELLENT, VERY_GOOD, GOOD, FAIR, POOR\n**Inventory Color:** D, E, F, G, H, I, J, K, L, M\n**Inventory Clarity:** FL, IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1\n**Inventory Shape:** ROUND, PRINCESS, CUSHION, EMERALD, OVAL, RADIANT, ASSCHER, MARQUISE, HEART, PEAR\n**Inventory Certificate:** GIA, IGI, AGS, HRD, EGL, NONE\n**Deletion Reasons:** DAMAGED, LOST, STOLEN, RETURNED_TO_SUPPLIER, OTHER\n\n**Ad Placements:** HOME_BANNER, SEARCH_SIDEBAR, LISTING_TOP, FOOTER\n**Ad Status:** PENDING, APPROVED, REJECTED, EXPIRED\n\n**Rating Abuse Reasons:** SPAM, PROFANITY, HARASSMENT, FALSE_INFORMATION, OFF_TOPIC, OTHER\n**Notification Frequency:** Instant, Hourly Digest, Daily Digest, Weekly Digest\n**Intended Use:** Engagement Ring, Wedding Band, Anniversary, Earrings, Necklace, Bracelet, Investment, Gift, Collection, Resale, Other",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25710894",
+		"_collection_link": "https://codefighter.postman.co/workspace/Personal-Workspace~5735433a-98a6-495c-b2c7-b0b5df0c8e5b/collection/25710894-94de93a2-62f5-4ef0-8af7-467ee0e2377f?action=share&source=collection_link&creator=25710894"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register - Seller",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.collectionVariables.set('authToken', jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe 2\",\n  \"email\": \"john.seller2@gmail.com\",\n  \"password\": \"SecurePass123!\",\n  \"confirmPassword\": \"SecurePass123!\",\n  \"userType\": \"seller\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new seller account. Password must be at least 8 characters with 1 uppercase, 1 lowercase, and 1 number."
+					},
+					"response": []
+				},
+				{
+					"name": "Register - Buyer",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Alice Smith\",\n  \"email\": \"alice.buyer@example.com\",\n  \"password\": \"BuyerPass123!\",\n  \"confirmPassword\": \"BuyerPass123!\",\n  \"userType\": \"buyer\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new buyer account"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.token) {",
+									"        pm.collectionVariables.set('authToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john.seller2@gmail.com\",\n  \"password\": \"SecurePass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with email and password. Returns JWT token and user status."
+					},
+					"response": []
+				},
+				{
+					"name": "Login Buyer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.token) {",
+									"        pm.collectionVariables.set('authToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"alice.buyer@example.com\",\n  \"password\": \"BuyerPass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with email and password. Returns JWT token and user status."
+					},
+					"response": []
+				},
+				{
+					"name": "Admin Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData && jsonData.token) {",
+									"        pm.collectionVariables.set('authToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin.diamond@gmail.com\",\n  \"password\": \"diamondAdmin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with email and password. Returns JWT token and user status."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Identity",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "document",
+									"description": "Upload Aadhar or PAN document (JPEG, PNG, or PDF, max 20MB)",
+									"type": "file",
+									"src": "/C:/Users/yashp/Downloads/ahmet-yuksek-tT8cDqpHRmw-unsplash.jpg"
+								},
+								{
+									"key": "fullName",
+									"value": "John Doe",
+									"type": "text"
+								},
+								{
+									"key": "dateOfBirth",
+									"value": "1990-01-15",
+									"type": "text"
+								},
+								{
+									"key": "phoneNumber",
+									"value": "+1234567890",
+									"type": "text"
+								},
+								{
+									"key": "identityProof[proofType]",
+									"value": "Aadhar",
+									"description": "Aadhar or PAN",
+									"type": "text"
+								},
+								{
+									"key": "identityProof[proofNumber]",
+									"value": "123456789012",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyName]",
+									"value": "Diamond Corp",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyRegistrationNumber]",
+									"value": "REG123456",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyAddress][line1]",
+									"value": "123 Diamond Street",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyAddress][line2]",
+									"value": "Suite 100",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyAddress][city]",
+									"value": "New York",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyAddress][state]",
+									"value": "NY",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyAddress][postalCode]",
+									"value": "10001",
+									"type": "text"
+								},
+								{
+									"key": "companyDetails[companyCountry]",
+									"value": "USA",
+									"type": "text"
+								},
+								{
+									"key": "businessType",
+									"value": "Diamond Trading",
+									"type": "text"
+								},
+								{
+									"key": "diamondIndustryActivity",
+									"value": "Wholesale diamond trading and certification services for 10+ years",
+									"type": "text"
+								},
+								{
+									"key": "isAuthorizedPerson",
+									"value": "true",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify-identity",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"verify-identity"
+							]
+						},
+						"description": "Upload KYC documents and complete identity verification. Status changes to PENDING_ADMIN_APPROVAL."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Get the authenticated user's profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phoneNumber\": \"+1234567890\",\n  \"companyAddress\": {\n    \"line1\": \"456 New Street\",\n    \"line2\": \"Floor 2\",\n    \"city\": \"Los Angeles\",\n    \"state\": \"CA\",\n    \"postalCode\": \"90001\"\n  },\n  \"diamondIndustryActivity\": \"Specialized in certified diamond trading with 15 years experience\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/profile",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"profile"
+							]
+						},
+						"description": "Update user profile information"
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logout and invalidate the current session token"
+					},
+					"response": []
+				}
+			],
+			"description": "User registration, login, profile management, and identity verification"
+		},
+		{
+			"name": "Requirements",
+			"item": [
+				{
+					"name": "Create Requirement",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data._id) {",
+									"        pm.collectionVariables.set('requirementId', jsonData.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Need 5ct D VVS1 Round Brilliant Diamond\",\n  \"description\": \"Looking for a high-quality 5 carat round brilliant diamond with GIA certification\",\n  \"details\": {\n    \"diamondType\": \"Natural\",\n    \"certified\": true,\n    \"preferredLabs\": [\"GIA\", \"IGI\"],\n    \"shapes\": [\"Round\"],\n    \"caratMin\": 4.5,\n    \"caratMax\": 5.5,\n    \"cutGrades\": [\"Excellent\", \"Ideal\"],\n    \"colorType\": \"Standard\",\n    \"colorGrades\": [\"D\", \"E\"],\n    \"clarityGrades\": [\"VVS1\", \"VVS2\", \"IF\"],\n    \"polish\": [\"Excellent\"],\n    \"symmetry\": [\"Excellent\"],\n    \"fluorescence\": [\"None\", \"Faint\"],\n    \"treatmentStatus\": \"Untreated\",\n    \"budgetMin\": 200000,\n    \"budgetMax\": 275000,\n    \"currency\": \"USD\",\n    \"deliveryTimeline\": \"2025-02-28T23:59:59Z\",\n    \"intendedUse\": \"Engagement Ring\",\n    \"conflictFree\": true\n  },\n//   \"additionalInfo\": \"Urgent requirement for an engagement ring. Looking for excellent cut quality with maximum brilliance.\",\n  \"endDate\": \"2026-02-28T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/requirements",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements"
+							]
+						},
+						"description": "Create a new diamond requirement posting"
+					},
+					"response": []
+				},
+				{
+					"name": "List Requirements",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requirements?page=1&limit=20&sortBy=createdAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								},
+								{
+									"key": "status",
+									"value": "ACTIVE",
+									"description": "ACTIVE, EXPIRED, CLOSED, FULFILLED, CANCELLED",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"description": "createdAt, budget, deadline"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all diamond requirements with filtering and pagination"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Requirement by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requirements/{{requirementId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements",
+								"{{requirementId}}"
+							]
+						},
+						"description": "Get detailed information about a specific requirement"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Requirement",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated: Premium 5ct Diamond Requirement\",\n  \"description\": \"Updated description with new specifications\",\n  \"endDate\": \"2026-03-31T23:59:59Z\",\n  \"startDate\": \"2025-01-15T00:00:00Z\",\n  \"tags\": [\"premium\", \"certified\", \"urgent\"],\n  \"details\": {\n    \"diamondType\": \"Natural\",\n    \"certified\": true,\n    \"preferredLabs\": [\"GIA\", \"AGS\"],\n    \"shapes\": [\"Round\", \"Cushion\"],\n    \"caratMin\": 4.8,\n    \"caratMax\": 5.5,\n    \"cutGrades\": [\"Excellent\", \"Ideal\"],\n    \"colorType\": \"Standard\",\n    \"colorGrades\": [\"D\", \"E\", \"F\"],\n    \"clarityGrades\": [\"IF\", \"VVS1\", \"VVS2\"],\n    \"polish\": [\"Excellent\"],\n    \"symmetry\": [\"Excellent\"],\n    \"fluorescence\": [\"None\", \"Faint\"],\n    \"treatmentStatus\": \"Untreated\",\n    \"budgetMin\": 220000,\n    \"budgetMax\": 300000,\n    \"currency\": \"USD\",\n    \"deliveryTimeline\": \"2025-03-15T23:59:59Z\",\n    \"intendedUse\": \"Engagement Ring\",\n    \"conflictFree\": true,\n    \"ethicalSourcing\": true\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/requirements/{{requirementId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements",
+								"{{requirementId}}"
+							]
+						},
+						"description": "Update an existing requirement (only by owner)"
+					},
+					"response": []
+				},
+				{
+					"name": "Close Requirement",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requirements/{{requirementId}}/close",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements",
+								"{{requirementId}}",
+								"close"
+							]
+						},
+						"description": "Close a requirement (marks as CLOSED)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Requirement",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/requirements/{{requirementId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"requirements",
+								"{{requirementId}}"
+							]
+						},
+						"description": "Delete a requirement (only by owner)"
+					},
+					"response": []
+				}
+			],
+			"description": "Diamond requirement posting and management"
+		},
+		{
+			"name": "Bids",
+			"item": [
+				{
+					"name": "Place Bid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data._id) {",
+									"        pm.collectionVariables.set('bidId', jsonData.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bidAmount\": 245000,\n  \"currency\": \"USD\",\n  \"negotiable\": false,\n  \"deliveryDays\": 7,\n  \"canMeetDeadline\": true,\n  \"shippingIncluded\": false,\n  \"insuranceIncluded\": false,\n  \"paymentTerms\": \"100% payment on delivery\",\n  \"acceptedPaymentMethods\": [\"Bank Transfer\"],\n  \"depositRequired\": false,\n  \"diamondType\": \"Natural\",\n  \"caratWeight\": 5.02,\n  \"shape\": \"Round\",\n  \"cutGrade\": \"Excellent\",\n  \"colorGrade\": \"D\",\n  \"clarityGrade\": \"VVS1\",\n  \"companyName\": \"Diamond Corp\",\n  \"contactPerson\": \"John Doe\",\n  \"contactEmail\": \"john@diamondcorp.com\",\n  \"contactPhone\": \"+1234567890\",\n  \"businessAddress\": {\n    \"street\": \"123 Diamond Street\",\n    \"city\": \"New York\",\n    \"country\": \"USA\",\n    \"postalCode\": \"10001\"\n  },\n  \"returnPolicy\": \"30-day money back guarantee\",\n  \"gradeGuarantee\": false,\n  \"stockStatus\": \"In Stock\",\n  \"locationOfDiamond\": \"New York, NY\",\n  \"canViewInPerson\": false,\n  \"agreedToTerms\": true\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}"
+							]
+						},
+						"description": "Place a bid on a requirement"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bids for Requirement",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}?sortBy=bidAmount&sortOrder=asc&status=PENDING",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}"
+							],
+							"query": [
+								{
+									"key": "sortBy",
+									"value": "bidAmount",
+									"description": "bidAmount, deliveryDays, createdAt, rating"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								},
+								{
+									"key": "status",
+									"value": "PENDING",
+									"description": "PENDING, ACCEPTED, REJECTED, WITHDRAWN"
+								}
+							]
+						},
+						"description": "Get all bids for a specific requirement"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Specific Bid",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}",
+								"{{bidId}}"
+							]
+						},
+						"description": "Get detailed information about a specific bid"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bid",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n//   \"bidAmount\": 235000,\n//   \"negotiationNote\": \"Price reduced for immediate acceptance\"\n\n//    \"deliveryDays\": 3,\n//   \"shippingMethod\": \"Premium Express Delivery\",\n//   \"canMeetDeadline\": true\n\n//   \"certificateUrl\": \"https://gia.edu/report-check?reportno=2185123456\",\n//   \"videoUrl\": \"https://example.com/videos/updated-diamond.mp4\",\n//   \"imagesUrls\": [\n//     \"https://example.com/images/new-photo-1.jpg\",\n//     \"https://example.com/images/new-photo-2.jpg\",\n//     \"https://example.com/images/new-photo-3.jpg\"\n//   ]\n\n\n// \"contactPerson\": \"Jane Smith\",\n//   \"contactEmail\": \"jane@diamondcorp.com\",\n//   \"contactPhone\": \"+1234567891\"\n\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}",
+								"{{bidId}}"
+							]
+						},
+						"description": "Update a bid (only by bidder, before acceptance)"
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Bid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}/accept",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}",
+								"{{bidId}}",
+								"accept"
+							]
+						},
+						"description": "Accept a bid (only by requirement owner)"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Bid",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}/reject",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}",
+								"{{bidId}}",
+								"reject"
+							]
+						},
+						"description": "Reject a bid (only by requirement owner)"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bid",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/bids/{{requirementId}}/{{bidId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bids",
+								"{{requirementId}}",
+								"{{bidId}}"
+							]
+						},
+						"description": "Delete/withdraw a bid (only by bidder)"
+					},
+					"response": []
+				}
+			],
+			"description": "Bid management for requirements"
+		},
+		{
+			"name": "Deals",
+			"item": [
+				{
+					"name": "Create Deal from Bid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data._id) {",
+									"        pm.collectionVariables.set('dealId', jsonData.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{bidId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"deals",
+								"{{bidId}}"
+							]
+						},
+						"description": "Create a deal from an accepted bid"
+					},
+					"response": []
+				},
+				{
+					"name": "List Deals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/deals?status=DEAL_CREATED",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"deals"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "DEAL_CREATED",
+									"description": "DEAL_CREATED, IN_PROGRESS, COMPLETED, CANCELLED"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"disabled": true
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all deals for the authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Deal by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{dealId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"deals",
+								"{{dealId}}"
+							]
+						},
+						"description": "Get detailed information about a specific deal"
+					},
+					"response": []
+				},
+				{
+					"name": "Download Deal PDF",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/deals/{{dealId}}/pdf",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"deals",
+								"{{dealId}}",
+								"pdf"
+							]
+						},
+						"description": "Download deal agreement as PDF"
+					},
+					"response": []
+				}
+			],
+			"description": "Deal management and contract generation"
+		},
+		{
+			"name": "Escrow",
+			"item": [
+				{
+					"name": "Initiate Escrow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}",
+								"description": "Unique key to prevent duplicate transactions"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"amount\": 23500000,\n  \"currency\": \"USD\",\n  \"idempotencyKey\":\"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/escrow/initiate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"escrow",
+								"initiate"
+							]
+						},
+						"description": "Initiate escrow and create Stripe payment intent"
+					},
+					"response": []
+				},
+				{
+					"name": "Release Escrow BUYER_CONFIRMATION",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealId\": \"{{dealId}}\",\n    \"confirmationType\": \"BUYER_CONFIRMATION\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/escrow/release",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"escrow",
+								"release"
+							]
+						},
+						"description": "Release payment to seller (buyer action)"
+					},
+					"response": []
+				},
+				{
+					"name": "Release Escrow SELLER_CONFIRMATION",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealId\": \"{{dealId}}\",\n    \"confirmationType\": \"SELLER_CONFIRMATION\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/escrow/release",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"escrow",
+								"release"
+							]
+						},
+						"description": "Release payment to seller (buyer action)"
+					},
+					"response": []
+				},
+				{
+					"name": "Refund Escrow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"reason\": \"DEAL_CANCELED\",\n  \"refundAmount\": 245000,\n  \"idempotencyKey\":\"550e8400-e29b-41d4-a716-446655440000\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/escrow/refund",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"escrow",
+								"refund"
+							]
+						},
+						"description": "Refund payment to buyer (admin/dispute resolution)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Escrow Status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/escrow/{{dealId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"escrow",
+								"{{dealId}}"
+							]
+						},
+						"description": "Get current escrow status for a deal"
+					},
+					"response": []
+				}
+			],
+			"description": "Escrow payment management with Stripe"
+		},
+		{
+			"name": "Chat",
+			"item": [
+				{
+					"name": "Initiate Conversation",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data._id) {",
+									"        pm.collectionVariables.set('conversationId', jsonData.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"participantIds\": [\"{{userId}}\", \"6950c81a48eef709ac6896c1\"],\n  \"contextType\": \"REQUIREMENT\",\n  \"contextId\": \"{{requirementId}}\",\n  \"initialMessage\": \"Hello, I'm interested in your diamond offer. Can we discuss the details?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chat/initiate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"initiate"
+							]
+						},
+						"description": "Initiate a new conversation between users"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"conversationId\": \"{{conversationId}}\",\n  \"text\": \"Hello, I'm interested in your diamond offer. Can we discuss the details?\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chat/send-message",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"send-message"
+							]
+						},
+						"description": "Send a text message in a conversation"
+					},
+					"response": []
+				},
+				{
+					"name": "Send Message with Attachment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"conversationId\" : \"{{conversationId}}\",\r\n    \"text\":\"Here's the certificate image\",\r\n    \"attachments\":[{\r\n        \"type\": \"image\",\r\n        \"url\": \"/uploads/file-1767115555052-680300939.jpg\",\r\n        \"fileName\": \"land-o-lakes-inc-7BXmH9YzNAI-unsplash.jpg\",\r\n        \"size\": 3629991\r\n    }]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chat/send-message",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"send-message"
+							]
+						},
+						"description": "Send a message with file attachment (max 10MB)"
+					},
+					"response": []
+				},
+				{
+					"name": "Upload Attachment",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/yashp/Downloads/land-o-lakes-inc-7BXmH9YzNAI-unsplash.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/chat/upload",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"upload"
+							]
+						},
+						"description": "Send a message with file attachment (max 10MB)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Conversation Messages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/chat/{{conversationId}}?page=1&limit=50",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"{{conversationId}}"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								}
+							]
+						},
+						"description": "Get all messages in a conversation"
+					},
+					"response": []
+				},
+				{
+					"name": "List Conversations",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/chat/conversations?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"chat",
+								"conversations"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all conversations for authenticated user"
+					},
+					"response": []
+				}
+			],
+			"description": "Real-time chat and messaging system"
+		},
+		{
+			"name": "Inventory",
+			"item": [
+				{
+					"name": "Create Inventory Item",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data._id) {",
+									"        pm.collectionVariables.set('inventoryId', jsonData.data._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"diamondDetails\": {\n    \"carat\": 5.02,\n    \"cut\": \"EXCELLENT\",\n    \"color\": \"D\",\n    \"clarity\": \"VVS1\",\n    \"shape\": \"ROUND\",\n    \"certificate\": \"GIA\",\n    \"certificateNumber\": \"2185123456\"\n  },\n  \"pricing\": {\n    \"costPrice\": 230000,\n    \"sellingPrice\": 245000,\n    \"currency\": \"USD\"\n  },\n  \"location\": \"Vault A-123\",\n  \"status\": \"IN_LOCKER\",\n  \"notes\": \"Premium stone with excellent light performance\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory"
+							]
+						},
+						"description": "Add a new diamond to inventory"
+					},
+					"response": []
+				},
+				{
+					"name": "List Inventory",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/inventory?page=1&limit=50&status=IN_LOCKER&sortBy=createdAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "IN_LOCKER",
+									"description": "IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION"
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"description": "createdAt, carat, costPrice, sellingPrice, updatedAt"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								},
+								{
+									"key": "shape",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "caratMin",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "caratMax",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get inventory list with filtering"
+					},
+					"response": []
+				},
+				{
+					"name": "Quick Status Update (Barcode)",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"RESERVED\", //IN_LOCKER, ON_MEMO, SOLD, IN_REPAIR, IN_TRANSIT, RETURNED, RESERVED, PENDING_CERTIFICATION\n  \"location\": \"Vault A-123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/{{inventoryId}}/quick-status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"{{inventoryId}}",
+								"quick-status"
+							]
+						},
+						"description": "Quick status update via barcode scanning"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Inventory Item",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pricing\": {\n    \"costPrice\": 235000,\n    \"sellingPrice\": 250000,\n    \"currency\": \"USD\"\n  },\n  \"status\": \"IN_LOCKER\",\n  \"location\": \"Vault B-456\",\n  \"notes\": \"Price updated based on market conditions\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/{{inventoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"{{inventoryId}}"
+							]
+						},
+						"description": "Update inventory item details"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Inventory Item",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notes\": \"Item sold externally\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/inventory/{{inventoryId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"inventory",
+								"{{inventoryId}}"
+							]
+						},
+						"description": "Soft delete an inventory item"
+					},
+					"response": []
+				}
+			],
+			"description": "Diamond inventory management with barcode support"
+		},
+		{
+			"name": "Ratings",
+			"item": [
+				{
+					"name": "Submit Rating",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"dealId\": \"{{dealId}}\",\n  \"rating\": 5,\n  \"categories\": {\n    \"communication\": 5,\n    \"productQuality\": 5,\n    \"delivery\": 5,\n    \"pricing\": 5,\n    \"professionalism\": 5\n  },\n  \"review\": \"Excellent seller! Diamond was exactly as described. Very professional and responsive.\",\n  \"isAnonymous\": false\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ratings/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ratings",
+								"{{userId}}"
+							]
+						},
+						"description": "Submit a rating for a user after a deal"
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Ratings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ratings/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ratings",
+								"{{userId}}"
+							]
+						},
+						"description": "Get all ratings for a specific user"
+					},
+					"response": []
+				},
+				{
+					"name": "Report Abuse",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"FALSE_INFORMATION\",\n  \"description\": \"This review appears to be fraudulent\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ratings/69540e1255810124626c637f/report",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ratings",
+								"69540e1255810124626c637f",
+								"report"
+							]
+						},
+						"description": "Report an abusive or fake rating"
+					},
+					"response": []
+				},
+				{
+					"name": "Report Abuse",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"reason\": \"FALSE_INFORMATION\",\n  \"description\": \"This review appears to be fraudulent\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ratings/69540e1255810124626c637f/reports",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ratings",
+								"69540e1255810124626c637f",
+								"reports"
+							]
+						},
+						"description": "Report an abusive or fake rating"
+					},
+					"response": []
+				}
+			],
+			"description": "User rating and review system"
+		},
+		{
+			"name": "Advertisements",
+			"item": [
+				{
+					"name": "Submit Ad Request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.ad && jsonData.data.ad._id) {",
+									"        pm.collectionVariables.set('adId', jsonData.data.ad._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Premium Diamond Collection\",\n  \"description\": \"Explore our exclusive certified diamond collection with GIA certificates\",\n  \"imageUrl\": \"https://example.com/images/ad-banner.jpg\",\n  \"linkUrl\": \"https://example.com/diamonds\",\n  \"duration\": 30,\n  \"placement\": \"HOME_BANNER\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ads/request",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ads",
+								"request"
+							]
+						},
+						"description": "Submit a new advertisement request (max 5 per day)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Ads",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ads?placement=HOME_BANNER&limit=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ads"
+							],
+							"query": [
+								{
+									"key": "placement",
+									"value": "HOME_BANNER",
+									"description": "HOME_BANNER, SEARCH_SIDEBAR, LISTING_TOP, FOOTER"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Get active advertisements (public endpoint)"
+					},
+					"response": []
+				},
+				{
+					"name": "Track Ad Click",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/ads/{{adId}}/click",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ads",
+								"{{adId}}",
+								"click"
+							]
+						},
+						"description": "Track ad click for analytics"
+					},
+					"response": []
+				}
+			],
+			"description": "Advertisement management for users"
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "List Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/users?page=1&limit=50&sortBy=createdAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "PENDING_ADMIN_APPROVAL",
+									"description": "PENDING_KYC, PENDING_ADMIN_APPROVAL, APPROVED, REJECTED, SUSPENDED",
+									"disabled": true
+								},
+								{
+									"key": "userType",
+									"value": "",
+									"description": "buyer, seller",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sortBy",
+									"value": "createdAt",
+									"description": "createdAt, name, userType, status"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Get list of all users with filtering (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Approve User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"APPROVE\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Approve a user's KYC verification"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"REJECT\",\n  \"rejectionReason\": \"Invalid documents provided. Please upload clear copies of your identification.\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Reject a user's KYC verification"
+					},
+					"response": []
+				},
+				{
+					"name": "Suspend User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"SUSPEND\",\n  \"suspensionReason\": \"Terms of service violation - fraudulent activity detected\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/admin/users/{{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Suspend a user account"
+					},
+					"response": []
+				},
+				{
+					"name": "List Ads (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/admin/ads?page=1&limit=50&status=PENDING&sortBy=submittedAt&sortOrder=desc",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"admin",
+								"ads"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "50"
+								},
+								{
+									"key": "status",
+									"value": "PENDING",
+									"description": "PENDING, APPROVED, REJECTED, EXPIRED"
+								},
+								{
+									"key": "sortBy",
+									"value": "submittedAt",
+									"description": "submittedAt, title, placement, duration"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						},
+						"description": "Get all advertisement requests (Admin only)"
+					},
+					"response": []
+				},
+				{
+					"name": "Approve Ad",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"APPROVE\",\n  \"adminNotes\": \"Ad content looks good and meets guidelines\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ads/{{adId}}/approve",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ads",
+								"{{adId}}",
+								"approve"
+							]
+						},
+						"description": "Approve an advertisement request"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Ad",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"action\": \"REJECT\",\n  \"adminNotes\": \"Image quality is poor and content violates guidelines\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/ads/{{adId}}/approve",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"ads",
+								"{{adId}}",
+								"approve"
+							]
+						},
+						"description": "Reject an advertisement request"
+					},
+					"response": []
+				}
+			],
+			"description": "Admin panel for user and content management (Admin role required)"
+		},
+		{
+			"name": "Notifications",
+			"item": [
+				{
+					"name": "List Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications?page=1&limit=20",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Get all notifications for authenticated user"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark Notification as Read",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/read/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								"read",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "69540ed055810124626c63b6"
+								}
+							]
+						},
+						"description": "Mark a specific notification as read"
+					},
+					"response": []
+				},
+				{
+					"name": "Mark All Notifications as Read",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/read-all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								"read-all"
+							]
+						},
+						"description": "Mark all notifications as read"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Notification",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notifications/:id",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notifications",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6953fccb45461ed79eb3d082"
+								}
+							]
+						},
+						"description": "Delete a specific notification"
+					},
+					"response": []
+				}
+			],
+			"description": "User notification management"
+		},
+		{
+			"name": "Notification Settings",
+			"item": [
+				{
+					"name": "Get Notification Settings",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/notification-settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notification-settings"
+							]
+						},
+						"description": "Get current notification preferences"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Notification Settings",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true,\n  \"channels\": {\n    \"inApp\": true,\n    \"email\": true,\n    \"emailDigest\": true,\n    \"emailAddress\": \"dealer@gemly.com\",\n    \"sms\": true,\n    \"phoneNumber\": \"+12025551234\",\n    \"push\": true\n  },\n  \"diamondTypes\": [\"Natural\", \"Lab-Grown\", \"Simulated\"],\n  \"labGrownMethods\": [\"CVD\", \"HPHT\"],\n  \"treatmentPreferences\": {\n    \"acceptUntreated\": true,\n    \"acceptTreated\": true,\n    \"acceptAny\": true\n  },\n  \"certificationFilter\": {\n    \"certifiedOnly\": false,\n    \"nonCertifiedOk\": true,\n    \"preferredLabs\": [\"GIA\", \"IGI\", \"AGS\", \"HRD\", \"EGL\"]\n  },\n  \"shapes\": [\"Round\", \"Princess\", \"Cushion\", \"Oval\", \"Emerald\", \"Pear\", \"Marquise\", \"Radiant\", \"Asscher\", \"Heart\"],\n  \"caratRanges\": [\n    {\n      \"min\": 0.5,\n      \"max\": 1.0,\n      \"description\": \"Small diamonds\"\n    },\n    {\n      \"min\": 1.0,\n      \"max\": 2.0,\n      \"description\": \"Standard engagement rings\"\n    },\n    {\n      \"min\": 2.0,\n      \"max\": 5.0,\n      \"description\": \"Premium stones\"\n    },\n    {\n      \"min\": 5.0,\n      \"max\": 10.0,\n      \"description\": \"Luxury pieces\"\n    }\n  ],\n  \"cutGrades\": [\"EXCELLENT\", \"VERY_GOOD\", \"GOOD\", \"FAIR\"],\n  \"colorGrades\": [\"D\", \"E\", \"F\", \"G\", \"H\", \"I\", \"J\", \"K\", \"L\", \"M\"],\n  \"clarityGrades\": [\"FL\", \"IF\", \"VVS1\", \"VVS2\", \"VS1\", \"VS2\", \"SI1\", \"SI2\", \"I1\", \"I2\"],\n  \"fancyColors\": {\n    \"enabled\": true,\n    \"hues\": [\"Pink\", \"Blue\", \"Yellow\", \"Green\", \"Orange\", \"Red\", \"Purple\", \"Brown\", \"Black\", \"Gray\", \"White\"],\n    \"intensities\": [\"Faint\", \"Very Light\", \"Light\", \"Fancy Light\", \"Fancy\", \"Fancy Intense\", \"Fancy Vivid\", \"Fancy Deep\", \"Fancy Dark\"],\n    \"naturalOnly\": false\n  },\n  \"budgetRanges\": [\n    {\n      \"min\": 1000,\n      \"max\": 5000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 5000,\n      \"max\": 15000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 15000,\n      \"max\": 50000,\n      \"currency\": \"USD\"\n    },\n    {\n      \"min\": 50000,\n      \"max\": 200000,\n      \"currency\": \"USD\"\n    }\n  ],\n  \"geographicPreferences\": {\n    \"canShipTo\": [\"USA\", \"Canada\", \"UK\", \"Australia\", \"Germany\", \"France\", \"Japan\", \"Singapore\", \"UAE\", \"Hong Kong\"],\n    \"localOnly\": false,\n    \"international\": true\n  },\n  \"timingFilters\": {\n    \"minimumLeadTime\": 3,\n    \"maximumLeadTime\": 60,\n    \"urgentOnly\": false\n  },\n  \"advancedFilters\": {\n    \"conflictFreeOnly\": true,\n    \"canProvideMatchingPairs\": true,\n    \"acceptsTradeIns\": true,\n    \"minimumBudget\": 1000,\n    \"currency\": \"USD\",\n    \"intendedUses\": [\"ENGAGEMENT\", \"WEDDING\", \"ANNIVERSARY\", \"INVESTMENT\", \"JEWELRY\", \"LOOSE_STONE\"]\n  },\n  \"frequency\": \"Instant\",\n  \"quietHours\": {\n    \"enabled\": true,\n    \"timezone\": \"America/New_York\",\n    \"startTime\": \"22:00\",\n    \"endTime\": \"08:00\",\n    \"daysOfWeek\": [0, 6]\n  }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/notification-settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"notification-settings"
+							]
+						},
+						"description": "Update notification preferences"
+					},
+					"response": []
+				}
+			],
+			"description": "Manage notification preferences"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5001/api/v1",
+			"type": "string"
+		},
+		{
+			"key": "authToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "requirementId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bidId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "dealId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "conversationId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "adId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "inventoryId",
+			"value": "",
+			"type": "string"
+		}
+	]
 }

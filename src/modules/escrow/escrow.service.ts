@@ -17,6 +17,7 @@ import {
   ESCROW_CONFIRMATION_TYPE,
   ESCROW_EVENT,
 } from "../../utils/constants.utility";
+import { CustomError } from "../../utils/customError.utility";
 
 class EscrowService {
   async initiate(
@@ -35,41 +36,40 @@ class EscrowService {
       .populate("requirement", "title");
 
     if (!deal) {
-      const error: any = new Error(RESPONSE_MESSAGES.DEAL_NOT_FOUND);
-      error.code = "DEAL_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.DEAL_NOT_FOUND,
+        "DEAL_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Verify user is the buyer
     if (deal.buyer._id.toString() !== user._id.toString()) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION,
+        "UNAUTHORIZED",
+        403
       );
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 3. Check if escrow already exists
     const existingEscrow = await Escrow.findOne({ deal: body.dealId });
     if (existingEscrow) {
-      const error: any = new Error(RESPONSE_MESSAGES.ESCROW_ALREADY_EXISTS);
-      error.code = "ESCROW_ALREADY_EXISTS";
-      error.statusCode = 409;
-      error.existingEscrowId = existingEscrow._id; // Return existing escrow ID
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ESCROW_ALREADY_EXISTS,
+        "ESCROW_ALREADY_EXISTS",
+        409
+      );
     }
 
     // 4. Validate amount matches deal agreed price
     const amountInCents = Math.round(deal.agreedPrice * 100);
     if (body.amount !== amountInCents) {
-      const error: any = new Error(
-        `Amount mismatch: expected ${amountInCents} cents, got ${body.amount} cents`
+      throw new CustomError(
+        `Amount mismatch: expected ${amountInCents} cents, got ${body.amount} cents`,
+        "AMOUNT_MISMATCH",
+        400
       );
-      error.code = "AMOUNT_MISMATCH";
-      error.statusCode = 400;
-      throw error;
     }
 
     // 5. Create Stripe PaymentIntent (unconfirmed - frontend will confirm)
@@ -93,19 +93,18 @@ class EscrowService {
         stripeError.statusCode === 402 ||
         stripeError.code === "card_declined"
       ) {
-        const error: any = new Error(
-          "Card declined. Please use a different payment method."
+        throw new CustomError(
+          "Card declined. Please use a different payment method.",
+          "CARD_DECLINED",
+          402
         );
-        error.code = "CARD_DECLINED";
-        error.statusCode = 402;
-        throw error;
       }
 
-      const error: any = new Error(RESPONSE_MESSAGES.PAYMENT_FAILED);
-      error.code = "PAYMENT_FAILED";
-      error.statusCode = stripeError.statusCode || 500;
-      error.stripeError = stripeError.message;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.PAYMENT_FAILED,
+        "PAYMENT_FAILED",
+        stripeError.statusCode || 500
+      );
     }
 
     // 6. Create escrow record
@@ -202,22 +201,20 @@ class EscrowService {
       .populate("seller", "_id name email stripeConnectedAccountId");
 
     if (!escrow) {
-      const error: any = new Error(RESPONSE_MESSAGES.ESCROW_NOT_FOUND);
-      error.code = "ESCROW_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ESCROW_NOT_FOUND,
+        "ESCROW_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Verify escrow is in HELD status
     if (escrow.status !== ESCROW_STATUS.HELD) {
-      const error: any = new Error(
-        `Cannot release payment. Escrow status is ${escrow.status}, expected HELD`
+      throw new CustomError(
+        `Cannot release payment. Escrow status is ${escrow.status}, expected HELD`,
+        "ESCROW_INVALID_STATUS",
+        422
       );
-      error.code = "ESCROW_INVALID_STATUS";
-      error.statusCode = 400;
-      error.currentStatus = escrow.status;
-      error.expectedStatus = ESCROW_STATUS.HELD;
-      throw error;
     }
 
     // 3. Verify user authorization
@@ -226,12 +223,11 @@ class EscrowService {
     const isAdmin = user.role === "2";
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION,
+        "UNAUTHORIZED_ESCROW_ACTION",
+        403
       );
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 4. Verify confirmation matches user role
@@ -240,10 +236,11 @@ class EscrowService {
       !isBuyer &&
       !isAdmin
     ) {
-      const error: any = new Error("Only buyer can provide buyer confirmation");
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        "Only buyer can provide buyer confirmation",
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     if (
@@ -251,12 +248,11 @@ class EscrowService {
       !isSeller &&
       !isAdmin
     ) {
-      const error: any = new Error(
-        "Only seller can provide seller confirmation"
+      throw new CustomError(
+        "Only seller can provide seller confirmation",
+        "UNAUTHORIZED",
+        403
       );
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 5. Record confirmation
@@ -320,12 +316,11 @@ class EscrowService {
     try {
       // Check if seller has connected account
       if (!escrow.seller.stripeConnectedAccountId) {
-        const error: any = new Error(
-          "Seller has not connected their Stripe account"
+        throw new CustomError(
+          "Seller has not connected their Stripe account",
+          "SELLER_ACCOUNT_NOT_CONNECTED",
+          400
         );
-        error.code = "SELLER_ACCOUNT_NOT_CONNECTED";
-        error.statusCode = 400;
-        throw error;
       }
 
       transfer = await createTransfer(
@@ -342,10 +337,11 @@ class EscrowService {
     } catch (stripeError: any) {
       console.error("Stripe transfer failed:", stripeError);
 
-      const error: any = new Error(RESPONSE_MESSAGES.TRANSFER_FAILED);
-      error.code = "TRANSFER_FAILED";
-      error.statusCode = 500;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.TRANSFER_FAILED,
+        "TRANSFER_FAILED",
+        500
+      );
     }
 
     // 9. Update escrow status
@@ -454,10 +450,11 @@ class EscrowService {
       .populate("seller", "_id name email");
 
     if (!escrow) {
-      const error: any = new Error(RESPONSE_MESSAGES.ESCROW_NOT_FOUND);
-      error.code = "ESCROW_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ESCROW_NOT_FOUND,
+        "ESCROW_NOT_FOUND",
+        404
+      );
     }
 
     // 2. Verify user is buyer or seller or admin
@@ -466,12 +463,11 @@ class EscrowService {
     const isAdmin = user.role === "2";
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      const error: any = new Error(
-        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED_ESCROW_ACTION,
+        "UNAUTHORIZED_ESCROW_ACTION",
+        403
       );
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
     }
 
     // 3. Check if escrow is in HELD status (cannot refund RELEASED)
@@ -480,22 +476,18 @@ class EscrowService {
         escrow.status === "RELEASED"
           ? `Cannot refund payment. Escrow status is ${escrow.status}. Payment already released to seller.`
           : `Cannot refund payment. Escrow status is ${escrow.status}, expected HELD`;
-      const error: any = new Error(message);
-      error.code = "ESCROW_INVALID_STATUS";
-      error.statusCode = 400;
-      error.currentStatus = escrow.status;
-      error.expectedStatus = ESCROW_STATUS.HELD;
-      throw error;
+      throw new CustomError(message, "ESCROW_INVALID_STATUS", 422);
     }
 
     // 4. Determine refund amount
     const refundAmount = body.refundAmount || escrow.amount;
 
     if (refundAmount > escrow.amount) {
-      const error: any = new Error(RESPONSE_MESSAGES.REFUND_INVALID_AMOUNT);
-      error.code = "REFUND_INVALID_AMOUNT";
-      error.statusCode = 400;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.REFUND_INVALID_AMOUNT,
+        "REFUND_INVALID_AMOUNT",
+        422
+      );
     }
 
     // 5. Process Stripe refund
@@ -508,10 +500,7 @@ class EscrowService {
       );
     } catch (stripeError) {
       console.error("Stripe refund failed:", stripeError);
-      const error: any = new Error("Refund processing failed");
-      error.code = "REFUND_FAILED";
-      error.statusCode = 500;
-      throw error;
+      throw new CustomError("Refund processing failed", "REFUND_FAILED", 500);
     }
 
     // 6. Update escrow status
@@ -594,10 +583,11 @@ class EscrowService {
       .populate("deal", "status agreedPrice");
 
     if (!escrow) {
-      const error: any = new Error(RESPONSE_MESSAGES.ESCROW_NOT_FOUND);
-      error.code = "ESCROW_NOT_FOUND";
-      error.statusCode = 404;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.ESCROW_NOT_FOUND,
+        "ESCROW_NOT_FOUND",
+        404
+      );
     }
 
     // Verify user is buyer or seller or admin
@@ -606,10 +596,11 @@ class EscrowService {
     const isAdmin = user.role === "2";
 
     if (!isBuyer && !isSeller && !isAdmin) {
-      const error: any = new Error(RESPONSE_MESSAGES.UNAUTHORIZED);
-      error.code = "UNAUTHORIZED";
-      error.statusCode = 403;
-      throw error;
+      throw new CustomError(
+        RESPONSE_MESSAGES.UNAUTHORIZED,
+        "UNAUTHORIZED",
+        403
+      );
     }
 
     // Calculate days remaining
