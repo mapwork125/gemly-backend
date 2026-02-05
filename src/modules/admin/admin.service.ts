@@ -70,10 +70,12 @@ class AdminService {
 
     const summaryObj = summary.reduce(
       (acc: any, item: any) => {
-        acc[item._id.toLowerCase().replace(/_/g, "")] = item.count;
+        if (item._id)
+          acc[item._id ? item._id.toLowerCase().replace(/_/g, "") : "unknown"] =
+            item.count;
         return acc;
       },
-      { total }
+      { total },
     );
 
     return {
@@ -109,7 +111,7 @@ class AdminService {
       throw new CustomError(
         RESPONSE_MESSAGES.USER_NOT_FOUND,
         "USER_NOT_FOUND",
-        404
+        404,
       );
     }
 
