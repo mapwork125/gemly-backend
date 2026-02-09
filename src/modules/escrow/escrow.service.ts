@@ -82,8 +82,7 @@ class EscrowService {
           dealId: body.dealId,
           buyerId: deal.buyer._id.toString(),
           sellerId: deal.seller._id.toString(),
-        },
-        body.idempotencyKey // Pass idempotency key to Stripe
+        }
       );
     } catch (stripeError: any) {
       console.error("Stripe payment intent creation failed:", stripeError);
@@ -331,8 +330,7 @@ class EscrowService {
           escrowId: escrow._id.toString(),
           dealId: body.dealId,
           platformFee,
-        },
-        body.idempotencyKey // Pass idempotency key to Stripe
+        }
       );
     } catch (stripeError: any) {
       console.error("Stripe transfer failed:", stripeError);
@@ -495,8 +493,7 @@ class EscrowService {
     try {
       refund = await refundPayment(
         escrow.paymentIntentId,
-        refundAmount,
-        body.idempotencyKey // Pass idempotency key to Stripe
+        refundAmount
       );
     } catch (stripeError) {
       console.error("Stripe refund failed:", stripeError);

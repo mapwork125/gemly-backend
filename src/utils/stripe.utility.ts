@@ -79,8 +79,7 @@ export const createAndConfirmPayment = async (
 export const createPaymentIntentForEscrow = async (
   amount: number,
   currency: string,
-  metadata: any,
-  idempotencyKey?: string
+  metadata: any
 ) => {
   return retryWithBackoff(async () => {
     const options: any = {
@@ -91,15 +90,7 @@ export const createPaymentIntentForEscrow = async (
       automatic_payment_methods: { enabled: true },
     };
 
-    const requestOptions: any = {};
-    if (idempotencyKey) {
-      requestOptions.idempotencyKey = idempotencyKey;
-    }
-
-    const paymentIntent = await stripe.paymentIntents.create(
-      options,
-      requestOptions
-    );
+    const paymentIntent = await stripe.paymentIntents.create(options);
     return paymentIntent;
   });
 };
@@ -111,8 +102,7 @@ export const capturePayment = async (paymentIntentId: string) => {
 
 export const refundPayment = async (
   paymentIntentId: string,
-  amount?: number,
-  idempotencyKey?: string
+  amount?: number
 ) => {
   return retryWithBackoff(async () => {
     const refundOptions: any = {
@@ -123,12 +113,7 @@ export const refundPayment = async (
       refundOptions.amount = amount;
     }
 
-    const requestOptions: any = {};
-    if (idempotencyKey) {
-      requestOptions.idempotencyKey = idempotencyKey;
-    }
-
-    const refund = await stripe.refunds.create(refundOptions, requestOptions);
+    const refund = await stripe.refunds.create(refundOptions);
     return refund;
   });
 };
@@ -142,8 +127,7 @@ export const createTransfer = async (
   amount: number,
   currency: string,
   destination: string,
-  metadata: any,
-  idempotencyKey?: string
+  metadata: any
 ) => {
   return retryWithBackoff(async () => {
     const transferOptions: any = {
@@ -153,15 +137,7 @@ export const createTransfer = async (
       metadata,
     };
 
-    const requestOptions: any = {};
-    if (idempotencyKey) {
-      requestOptions.idempotencyKey = idempotencyKey;
-    }
-
-    const transfer = await stripe.transfers.create(
-      transferOptions,
-      requestOptions
-    );
+    const transfer = await stripe.transfers.create(transferOptions);
     return transfer;
   });
 };
