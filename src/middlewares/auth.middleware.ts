@@ -19,7 +19,7 @@ export const authMiddleware = async (req, res, next) => {
     const decoded: any = verifyToken(token);
     console.log(decoded);
 
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('-password');
     if (!user || user?.tokenVersion !== decoded?.tokenVersion)
       return res
         .status(401)
@@ -79,7 +79,7 @@ export const optionalAuthMiddleware = async (req, res, next) => {
     const token = auth.split(" ")[1];
     const decoded: any = verifyToken(token);
 
-    const user = await User.findById(decoded.id);
+    const user = await User.findById(decoded.id).select('-password');
     if (user && user?.tokenVersion === decoded?.tokenVersion) {
       req.user = user;
     } else {
