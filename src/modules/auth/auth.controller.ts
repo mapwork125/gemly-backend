@@ -53,7 +53,7 @@ export const verifyIdentity = asyncHandler(async (req, res) => {
   }
   // Call the service to verify identity and update the user
   const data: any = await authService.verifyIdentity(req.user._id, body);
-
+  console.log(data);
   return success(
     res,
     RESPONSE_MESSAGES.PENDING_ADMIN_APPROVAL,

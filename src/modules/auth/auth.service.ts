@@ -79,7 +79,7 @@ class AuthService {
   async verifyIdentity(userId, body) {
     return User.findByIdAndUpdate(
       userId,
-      { kyc: body, status: USER_STATUS.PENDING_ADMIN_APPROVAL },
+      { kyc: body, status: USER_STATUS.APPROVED, isVerified: true },//USER_STATUS.PENDING_ADMIN_APPROVAL },
       { new: true }
     );
   }
