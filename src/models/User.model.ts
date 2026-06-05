@@ -155,7 +155,7 @@ const UserSchema = new mongoose.Schema(
         USER_STATUS.REJECTED,
         USER_STATUS.SUSPENDED,
       ],
-      default: USER_STATUS.PENDING_KYC,
+      default: USER_STATUS.APPROVED,
     },
     notificationsEnabled: { type: Boolean, default: true },
     kyc: {
