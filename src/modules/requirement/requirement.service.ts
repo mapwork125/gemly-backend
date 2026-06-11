@@ -71,6 +71,8 @@ class ReqService {
     const requirement = await Requirement.findById(id).populate({
       path: "userId",
       select: "_id name email",
+    }).populate({
+      path: "bids",
     });
 
     if (!requirement) {

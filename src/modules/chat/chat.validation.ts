@@ -86,3 +86,8 @@ export const conversationIdSchema = Joi.object({
   user1: Joi.string().hex().length(24).required(),
   user2: Joi.string().hex().length(24).required(),
 });
+
+export const bidOptionalSchema = initiateConversationSchema.fork(
+  Object.keys(initiateConversationSchema.describe().keys),
+  (schema) => schema.optional()
+);

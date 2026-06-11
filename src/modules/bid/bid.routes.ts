@@ -54,8 +54,8 @@ const bidQuerySchema = Joi.object({
 r.post(
   "/:requirementId",
   authMiddleware,
-  validateParams(requirementIdSchema),
-  validate(bidSchema),
+  //validateParams(requirementIdSchema),
+  //validate(bidSchema),
   C.placeBid
 );
 
@@ -63,8 +63,8 @@ r.post(
 r.get(
   "/:requirementId",
   authMiddleware,
-  validateParams(requirementIdSchema),
-  validateQuery(bidQuerySchema),
+  //alidateParams(requirementIdSchema),
+  //validateQuery(bidQuerySchema),
   C.getBids
 );
 
@@ -72,7 +72,7 @@ r.get(
 r.get(
   "/:requirementId/:bidId",
   authMiddleware,
-  validateParams(requirementBidSchema),
+  //validateParams(requirementBidSchema),
   C.getBid
 );
 
@@ -80,8 +80,8 @@ r.get(
 r.put(
   "/:requirementId/:bidId",
   authMiddleware,
-  validateParams(updatebidIdSchema),
-  validate(bidUpdateSchema),
+  //validateParams(updatebidIdSchema),
+  //validate(bidUpdateSchema),
   C.updateBid
 );
 
@@ -89,7 +89,7 @@ r.put(
 r.put(
   "/:requirementId/:bidId/:action(accept)",
   authMiddleware,
-  validateParams(requirementBidActionSchema),
+  //validateParams(requirementBidActionSchema),
   C.acceptBid
 );
 
@@ -97,7 +97,7 @@ r.put(
 r.put(
   "/:requirementId/:bidId/:action(reject)",
   authMiddleware,
-  validateParams(requirementBidActionSchema),
+  //validateParams(requirementBidActionSchema),
   C.rejectBid
 );
 
@@ -105,7 +105,7 @@ r.put(
 r.delete(
   "/:requirementId/:bidId",
   authMiddleware,
-  validateParams(requirementBidSchema),
+  //validateParams(requirementBidSchema),
   C.deleteBid
 );
 

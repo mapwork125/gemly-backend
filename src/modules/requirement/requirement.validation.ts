@@ -244,12 +244,12 @@ const detailsSchema = (isRequired = true) => {
 };
 
 export const requirementSchema = Joi.object({
-  title: Joi.string().required(),
-  description: Joi.string().required(),
+  title: Joi.string(), //.required(),
+  description: Joi.string(),//.required(),
   endDate: Joi.date().optional(),
   startDate: Joi.date().optional(),
   tags: Joi.array().items(Joi.string()).optional(),
-  details: detailsSchema(true),
+  details: detailsSchema(false),
 });
 
 export const updateRequirementSchema = Joi.object({

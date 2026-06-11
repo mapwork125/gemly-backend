@@ -17,13 +17,13 @@ import {
 
 export const bidSchema = Joi.object({
   // PRICING INFORMATION
-  bidAmount: Joi.number().greater(0).required(),
+  bidAmount: Joi.number().greater(0).optional(),//.required(),
   currency: Joi.string()
     .valid(...Object.values(CURRENCY))
     .required()
     .default("USD"),
   pricePerCarat: Joi.number().min(0),
-  negotiable: Joi.boolean().required().default(false),
+  negotiable: Joi.boolean().optional().default(false), //required().default(false),
   negotiationNote: Joi.string().max(500),
 
   // DELIVERY TERMS
@@ -272,3 +272,9 @@ export const bidUpdateSchema = Joi.object({
   price: Joi.number().min(0),
   proposal: Joi.string().allow(""),
 }).min(1); // At least one field must be provided
+
+
+export const bidOptionalSchema = bidSchema.fork(
+  Object.keys(bidSchema.describe().keys),
+  (schema) => schema.optional()
+);

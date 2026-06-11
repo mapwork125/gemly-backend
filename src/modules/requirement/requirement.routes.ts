@@ -16,7 +16,8 @@ import {
 } from "./requirement.validation";
 const r = Router();
 
-r.post("/", authMiddleware, validate(requirementSchema), Ctrl.create);
+//validate(requirementSchema),
+r.post("/", authMiddleware,  Ctrl.create);
 r.get("/", validate(filterRequirementsSchema), Ctrl.index);
 r.get(
   "/:id",

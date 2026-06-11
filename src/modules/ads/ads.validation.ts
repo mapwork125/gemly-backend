@@ -2,14 +2,15 @@ import Joi from "joi";
 
 // Submit ad request validation
 export const submitAdSchema = Joi.object({
-  title: Joi.string().min(5).max(100).required(),
-  description: Joi.string().min(10).max(500).required(),
-  imageUrl: Joi.string().required(),
-  linkUrl: Joi.string().uri().optional(),
-  duration: Joi.number().min(7).max(90).required(),
+  title: Joi.string().min(5).max(100).optional(),//.required(),
+  description: Joi.string().min(10).max(500).optional(),//.required(),
+  imageUrl: Joi.string().optional(),//.required(),
+  linkUrl: Joi.string().uri().optional().optional(),
+  duration: Joi.number().min(7).max(90).optional(),//.required(),
   placement: Joi.string()
     .valid("HOME_BANNER", "SEARCH_SIDEBAR", "LISTING_TOP", "FOOTER")
-    .required(),
+    //.required(),
+    .optional(),
 });
 
 // Legacy alias for backward compatibility
@@ -34,15 +35,15 @@ export const adIdSchema = Joi.object({
 
 // Approve/Reject ad validation
 export const approveAdSchema = Joi.object({
-  action: Joi.string().valid("APPROVE", "REJECT").required(),
+  action: Joi.string().valid("APPROVE", "REJECT").optional(),//.required(),
   startDate: Joi.date().when("action", {
     is: "APPROVE",
-    then: Joi.required(),
+    then: Joi.optional(),//.required(),
   }),
   priority: Joi.number().min(1).max(10).optional(),
   rejectionReason: Joi.string().max(500).when("action", {
     is: "REJECT",
-    then: Joi.required(),
+    then: Joi.optional(),//.required(),
   }),
 });
 
