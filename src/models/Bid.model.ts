@@ -22,35 +22,35 @@ const BidSchema = new mongoose.Schema(
     },
 
     // PRICING INFORMATION
-    bidAmount: { type: Number, required: true, min: 0 },
-    currency: { type: String, required: true, default: "USD" },
+    bidAmount: { type: Number, required: false, min: 0 },
+    currency: { type: String, required: false, default: "USD" },
     pricePerCarat: { type: Number },
-    negotiable: { type: Boolean, required: true, default: false },
+    negotiable: { type: Boolean, required: false, default: false },
     negotiationNote: { type: String, maxlength: 500 },
 
     // DELIVERY TERMS
-    deliveryDays: { type: Number, required: true, min: 1 },
-    canMeetDeadline: { type: Boolean, required: true },
+    deliveryDays: { type: Number, required: false, min: 1 },
+    canMeetDeadline: { type: Boolean, required: false },
     shippingMethod: { type: String },
     shippingCost: { type: Number, min: 0 },
-    shippingIncluded: { type: Boolean, required: true, default: false },
-    insuranceIncluded: { type: Boolean, required: true, default: false },
+    shippingIncluded: { type: Boolean, required: false, default: false },
+    insuranceIncluded: { type: Boolean, required: false, default: false },
     insuranceCost: { type: Number, min: 0 },
 
     // PAYMENT TERMS
-    paymentTerms: { type: String, required: true, maxlength: 500 },
-    acceptedPaymentMethods: { type: [String], required: true },
-    depositRequired: { type: Boolean, required: true, default: false },
+    paymentTerms: { type: String, required: false, maxlength: 500 },
+    acceptedPaymentMethods: { type: [String], required: false },
+    depositRequired: { type: Boolean, required: false, default: false },
     depositAmount: { type: Number, min: 0 },
     depositPercentage: { type: Number, min: 0, max: 100 },
 
     // DIAMOND DETAILS
-    diamondType: { type: String, required: true },
-    caratWeight: { type: Number, required: true, min: 0.01 },
-    shape: { type: String, required: true },
-    cutGrade: { type: String, required: true },
+    diamondType: { type: String, required: false },
+    caratWeight: { type: Number, required: false, min: 0.01 },
+    shape: { type: String, required: false },
+    cutGrade: { type: String, required: false },
     colorGrade: { type: String },
-    clarityGrade: { type: String, required: true },
+    clarityGrade: { type: String, required: false },
     certificateLab: { type: String },
     certificateNumber: { type: String },
     certificateUrl: { type: String },
@@ -75,25 +75,25 @@ const BidSchema = new mongoose.Schema(
     imagesUrls: { type: [String] },
 
     // SELLER INFORMATION
-    companyName: { type: String, required: true, maxlength: 200 },
-    contactPerson: { type: String, required: true, maxlength: 100 },
-    contactEmail: { type: String, required: true },
-    contactPhone: { type: String, required: true },
+    companyName: { type: String, required: false, maxlength: 200 },
+    contactPerson: { type: String, required: false, maxlength: 100 },
+    contactEmail: { type: String, required: false },
+    contactPhone: { type: String, required: false },
     businessAddress: {
-      street: { type: String, required: true },
-      city: { type: String, required: true },
+      street: { type: String, required: false },
+      city: { type: String, required: false },
       state: { type: String },
-      country: { type: String, required: true },
-      postalCode: { type: String, required: true },
+      country: { type: String, required: false },
+      postalCode: { type: String, required: false },
     },
     businessRegistration: { type: String },
     yearsInBusiness: { type: Number, min: 0 },
     website: { type: String },
 
     // GUARANTEES & POLICIES
-    returnPolicy: { type: String, required: true, maxlength: 1000 },
+    returnPolicy: { type: String, required: false, maxlength: 1000 },
     warranty: { type: String, maxlength: 1000 },
-    gradeGuarantee: { type: Boolean, required: true, default: false },
+    gradeGuarantee: { type: Boolean, required: false, default: false },
     buybackPolicy: { type: String, maxlength: 500 },
 
     // ADDITIONAL NOTES
@@ -112,13 +112,13 @@ const BidSchema = new mongoose.Schema(
     ],
 
     // AVAILABILITY
-    stockStatus: { type: String, required: true },
-    locationOfDiamond: { type: String, required: true },
-    canViewInPerson: { type: Boolean, required: true, default: false },
+    stockStatus: { type: String, required: false },
+    locationOfDiamond: { type: String, required: false },
+    canViewInPerson: { type: Boolean, required: false, default: false },
     viewingLocations: { type: [String] },
 
     // TERMS & CONDITIONS
-    agreedToTerms: { type: Boolean, required: true, default: false },
+    agreedToTerms: { type: Boolean, required: false, default: false },
     validUntil: { type: Date },
 
     // LEGACY FIELDS (for backward compatibility)
