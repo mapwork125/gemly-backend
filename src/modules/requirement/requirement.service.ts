@@ -70,12 +70,14 @@ class ReqService {
   }
 
   async get(id, userId?: string, ipAddress?: string, userAgent?: string) {
-    const requirement = await Requirement.findById(id).populate({
+    let requirement = await Requirement.findById(id).populate({
       path: "userId",
       select: "_id name email",
     }).populate({
       path: "bids",
     });
+
+    // match: { status: "active" },
 
     if (!requirement) {
       throw new CustomError(
@@ -84,7 +86,11 @@ class ReqService {
         404
       );
     }
+    
 
+    const isplacebidData = requirement.bids.filter(
+      (bid: any) => bid.bidder.toString() === id.toString()
+    );
     // Track view if:
     // 1. User is not the requirement owner
     // 2. This is a unique view (first time this user/IP views this requirement)
@@ -94,7 +100,11 @@ class ReqService {
       await this.trackView(id, userId, ipAddress, userAgent);
     }
 
-    return requirement;
+    //return requirement;
+    return {
+      ...requirement.toObject(),
+      isplacebidData,
+    };
   }
 
   /**
