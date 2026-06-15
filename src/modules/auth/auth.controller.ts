@@ -64,7 +64,9 @@ export const verifyIdentity = asyncHandler(async (req, res) => {
 });
 
 export const getProfile = asyncHandler(async (req, res) => {
-  return success(res, RESPONSE_MESSAGES.PROFILE_RETRIEVED, req.user);
+  
+  let user_req_bids_data = await authService.req_bids_dataservice(req.user._id);
+  return success(res, RESPONSE_MESSAGES.PROFILE_RETRIEVED, {user: req.user, requirements: user_req_bids_data.requirements.length == 0 ? [] : user_req_bids_data.requirements, bids: user_req_bids_data.bids.length == 0 ? [] : user_req_bids_data.bids});
 });
 
 export const updateProfile = asyncHandler(async (req, res) => {

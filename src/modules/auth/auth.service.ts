@@ -1,9 +1,12 @@
 import User from "../../models/User.model";
+import Requirement from "../../models/Requirement.model";
+import Bid from "../../models/Bid.model";
+
 import bcrypt from "bcryptjs";
 import { generateToken } from "../../utils/jwt.utility";
 import { RESPONSE_MESSAGES, USER_STATUS } from "../../utils/constants.utility";
 import { CustomError } from "../../utils/customError.utility";
-
+import mongoose from "mongoose";
 class AuthService {
   async register(data) {
     const hashed = await bcrypt.hash(data.password, 10);
@@ -106,6 +109,13 @@ class AuthService {
   }
   async logout(id) {
     return User.findByIdAndUpdate(id, { tokenVersion: 1 }, { new: true });
+  }
+  async req_bids_dataservice(id){
+      let requirements = await Requirement.find({ userId: new mongoose.Types.ObjectId(id) });
+      let bids = await Bid.find({ userId: new mongoose.Types.ObjectId(id) });
+
+      return { requirements, bids };
+
   }
 }
 export default new AuthService();

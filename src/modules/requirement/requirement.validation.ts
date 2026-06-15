@@ -289,4 +289,6 @@ export const filterRequirementsSchema = Joi.object({
     .valid("createdAt", "deadline", "budgetMax", "views")
     .optional(),
   sortOrder: Joi.string().valid("asc", "desc").optional(),
+  userId: Joi.string().optional(),
+
 });

@@ -11,13 +11,14 @@ import {
   STATUS,
 } from "../../utils/constants.utility";
 import { CustomError } from "../../utils/customError.utility";
-
+import mongoose from "mongoose";
 class ReqService {
   async index(req) {
     const {
       page = 1,
       limit = 20,
       status,
+      userId,
       diamondType,
       shapes,
       caratMin,
@@ -33,6 +34,7 @@ class ReqService {
     const query = {};
 
     if (status) query["status"] = status;
+    if (userId) query["userId"] = {$ne: new mongoose.Types.ObjectId(userId)};
     if (diamondType) query["details.diamondType"] = diamondType;
     if (shapes) query["details.shapes"] = { $in: shapes.split(",") };
     if (caratMin || caratMax) {
