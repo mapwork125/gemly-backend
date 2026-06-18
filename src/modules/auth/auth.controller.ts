@@ -26,7 +26,7 @@ export const login = asyncHandler(async (req, res) => {
     user.status === USER_STATUS.APPROVED || user.role === USER_ROLE.ADMIN
       ? RESPONSE_MESSAGES.LOGIN_SUCCESS
       : RESPONSE_MESSAGES[user.status] || RESPONSE_MESSAGES.PENDING_KYC;
-  return success(res, message, {}, 200, status, { token,userId:user._id });
+  return success(res, message, {}, 200, status, { token,_id:user._id });
 });
 
 export const verifyIdentity = asyncHandler(async (req, res) => {
