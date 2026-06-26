@@ -125,6 +125,9 @@ const BidSchema = new mongoose.Schema(
     price: { type: Number }, // deprecated, use bidAmount
     proposal: { type: String }, // deprecated, use additionalNotes
     isSeen: { type: Boolean, default: false },
+
+    requirementId: { type: String }, // deprecated, use additionalNotes
+
   },
   {
     timestamps: true,
@@ -240,6 +243,8 @@ export interface IBid extends mongoose.Document {
   price?: number;
   proposal?: string;
   isSeen: boolean;
+
+  requirementId:string;
 
   createdAt: Date;
   updatedAt: Date;

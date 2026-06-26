@@ -61,6 +61,7 @@ class BidService {
     const bidData = {
       bidder: user._id,
       status: "PENDING",
+      requirementId:requirementId,
       ...body,
     };
 
