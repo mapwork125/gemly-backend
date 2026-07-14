@@ -77,6 +77,7 @@ class AuthService {
       userType: user.userType,
       tokenVersion: user.tokenVersion,
     });
+    
     return { user, token };
   }
   async verifyIdentity(userId, body) {
