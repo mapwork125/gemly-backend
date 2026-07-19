@@ -290,5 +290,5 @@ export const filterRequirementsSchema = Joi.object({
     .optional(),
   sortOrder: Joi.string().valid("asc", "desc").optional(),
   userId: Joi.string().optional(),
-
+  userType: Joi.string().optional(),
 });

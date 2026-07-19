@@ -63,7 +63,8 @@ export const getBid = asyncHandler(async (req, res) => {
   const result = await service.get(
     req.params.bidId,
     req.user,
-    req.params.requirementId
+    req.params.requirementId,
+    req.params.userType
   );
 
   return res.status(200).json({

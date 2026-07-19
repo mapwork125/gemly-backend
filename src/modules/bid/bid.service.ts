@@ -20,7 +20,7 @@ class BidService {
         404
       );
     }
-
+    console.log("requirement.status ",requirement.status)
     if (requirement.status !== STATUS.ACTIVE) {
       throw new CustomError(
         RESPONSE_MESSAGES.REQUIREMENT_CLOSED,
@@ -324,7 +324,7 @@ class BidService {
     };
   }
 
-  async get(bidId, user, requirementId?: string) {
+  async get(bidId, user, requirementId?: string,userType?:string) {
     const bid: any = await Bid.findById(bidId)
       .populate({
         path: "bidder",
@@ -368,9 +368,14 @@ class BidService {
     const isRequirementOwner =
       requirement.userId.toString() === user._id.toString();
     const isBidOwner = bid.bidder._id.toString() === user._id.toString();
+    console.log("isRequirementOwner ",isRequirementOwner)
+    console.log("bid.isSeen ",bid.isSeen)
+    console.log("bid.userType ",userType)
 
+
+    //&& isRequirementOwner buyer hoi and bid joto hoi atle isSeen true kari devanu 
     // Mark as seen if user is the requirement owner
-    if (isRequirementOwner && !bid.isSeen) {
+    if (userType == "buyer"  && !bid.isSeen) {
       await Bid.updateOne({ _id: bidId }, { isSeen: true });
       bid.isSeen = true;
     }

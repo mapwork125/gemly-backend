@@ -29,12 +29,19 @@ class ReqService {
       certified,
       sortBy = "createdAt",
       sortOrder = "desc",
+      userType
     } = req.query;
 
     const query = {};
 
     if (status) query["status"] = status;
-    if (userId) query["userId"] = {$ne: new mongoose.Types.ObjectId(userId)};
+    if(userType && userType == "buyer"){
+      if (userId) query["userId"] = {$eq: new mongoose.Types.ObjectId(userId)};
+
+    }else{
+      if (userId) query["userId"] = {$ne: new mongoose.Types.ObjectId(userId)};
+
+    }
     if (diamondType) query["details.diamondType"] = diamondType;
     if (shapes) query["details.shapes"] = { $in: shapes.split(",") };
     if (caratMin || caratMax) {
@@ -50,23 +57,73 @@ class ReqService {
     console.log("query", query);
 
     // Auto-disable expired requirements
-    await Requirement.updateMany(
-      { endDate: { $lt: new Date() }, status: STATUS.ACTIVE },
-      { status: STATUS.EXPIRED }
-    );
+    // await Requirement.updateMany(
+    //   { endDate: { $lt: new Date() }, status: STATUS.ACTIVE },
+    //   { status: STATUS.EXPIRED }
+    // );
 
-    const requirements = await Requirement.find(query)
-      .populate({
-        path: "userId",
-        select: "_id name email",
-      })
-      .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
-      .skip((page - 1) * limit)
-      .limit(limit);
+    
+    if(userType && userType == "buyer"){
+      const requirements = await Requirement.aggregate([
+        {
+          $match: query
+        },
+        {
+          $lookup: {
+            from: "bids",
+            localField: "bids",
+            foreignField: "_id",
+            as: "bids",
+          },
+        },
+        {
+          $addFields: {
+            unseenCount: {
+              $size: {
+                $filter: {
+                  input: "$bids",
+                  as: "bid",
+                  cond: {
+                    $eq: ["$$bid.isSeen", false],
+                  },
+                },
+              },
+            },
+          },
+        },
+        {
+          $sort: {
+            unseenCount: -1,
+            createdAt: -1,
+          },
+        },
+        {
+          $skip: (page - 1) * parseInt(limit),
+        },
+        {
+          $limit: parseInt(limit),
+        },
+      ]);
 
-    const total = await Requirement.countDocuments(query);
+      const total = await Requirement.countDocuments(query);
 
-    return { requirements, total, page, limit };
+      return { requirements, total, page, limit };
+
+    }else{
+      const requirements = await Requirement.find(query)
+        .populate({
+          path: "userId",
+          select: "_id name email",
+        })
+        .sort({ [sortBy]: sortOrder === "asc" ? 1 : -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+
+        const total = await Requirement.countDocuments(query);
+
+        return { requirements, total, page, limit };
+    }
+    
   }
 
   async get(id, userId?: string, ipAddress?: string, userAgent?: string) {

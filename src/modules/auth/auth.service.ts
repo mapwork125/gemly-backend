@@ -25,7 +25,7 @@ class AuthService {
       userType: user.userType,
       tokenVersion: user.tokenVersion,
     });
-    return { status: USER_STATUS.PENDING_KYC, token };
+    return {userInfo:{userId :user._id,userType:user.userType},user:{status: USER_STATUS.PENDING_KYC, token }};
   }
   async login({ email, password }) {
     // user check

@@ -70,7 +70,7 @@ r.get(
 
 // Get a specific bid by ID with requirement context
 r.get(
-  "/:requirementId/:bidId",
+  "/:requirementId/:bidId/:userType",
   authMiddleware,
   //validateParams(requirementBidSchema),
   C.getBid
