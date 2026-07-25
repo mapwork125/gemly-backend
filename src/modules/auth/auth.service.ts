@@ -112,8 +112,12 @@ class AuthService {
     return User.findByIdAndUpdate(id, { tokenVersion: 1 }, { new: true });
   }
   async req_bids_dataservice(id){
+    console.log("id ",id)
       let requirements = await Requirement.find({ userId: new mongoose.Types.ObjectId(id) });
-      let bids = await Bid.find({ userId: new mongoose.Types.ObjectId(id) });
+      let bids = await Bid.find({ bidder:id.toString() });
+
+      console.log("requirements ",requirements.length )
+      console.log("bids ",bids.length )
 
       return { requirements, bids };
 

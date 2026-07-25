@@ -631,6 +631,9 @@ class BidService {
 
   async remove(bidId, user, requirementId?: string) {
     // 1. Find bid
+    console.log("user ",user)
+    console.log("bidId ",bidId)
+    console.log("requirementId ",requirementId)
     const bid: any = await Bid.findById(bidId);
     if (!bid) {
       throw new CustomError(
@@ -639,6 +642,7 @@ class BidService {
         404
       );
     }
+
 
     // 2. Only bidder can withdraw their own bid
     if (bid.bidder.toString() !== user._id.toString()) {
