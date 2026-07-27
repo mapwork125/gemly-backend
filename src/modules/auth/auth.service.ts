@@ -114,8 +114,64 @@ class AuthService {
   async req_bids_dataservice(id){
     console.log("id ",id)
       let requirements = await Requirement.find({ userId: new mongoose.Types.ObjectId(id) });
-      let bids = await Bid.find({ bidder:id.toString() });
+      //let bids = await Bid.find({ bidder:id.toString() });
 
+      const bids = await Bid.aggregate([
+        {
+          $match: {
+            bidder: new mongoose.Types.ObjectId(id),
+          },
+        },
+        {
+          $lookup: {
+            from: "requirements",
+            let: {
+              requirementId: {
+                $toObjectId: "$requirementId",
+              },
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: ["$_id", "$$requirementId"],
+                  },
+                },
+              },
+              {
+                $lookup: {
+                  from: "users",
+                  localField: "userId",
+                  foreignField: "_id",
+                  as: "user",
+                },
+              },
+              {
+                $unwind: "$user",
+              },
+            ],
+            as: "requirement",
+          },
+        },
+        {
+          $unwind: {
+            path: "$requirement",
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        {
+          $addFields: {
+            user: {
+              _id: "$requirement.user._id",
+              name: "$requirement.user.name",
+              email: "$requirement.user.email",
+            },
+          },
+        },
+        {
+          $unset: "requirement",
+        },
+      ]);
       console.log("requirements ",requirements.length )
       console.log("bids ",bids.length )
 
