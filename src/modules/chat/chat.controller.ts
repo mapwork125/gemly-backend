@@ -33,6 +33,7 @@ export const initiateConversation = asyncHandler(async (req, res) => {
         userId: p._id,
         name: p.name,
         role: p.role,
+        userType: p.userType,
       })),
       contextType: result.conversation.contextType,
       contextId: result.conversation.contextId._id,

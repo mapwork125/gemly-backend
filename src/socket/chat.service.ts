@@ -47,7 +47,7 @@ class ChatService {
       contextType,
       contextId: new mongoose.Types.ObjectId(contextId),
     })
-      .populate("participantIds", "name email role")
+      .populate("participantIds", "name email role userType")
       .populate({
         path: "contextId",
         select: "title agreedPrice status",
@@ -71,7 +71,7 @@ class ChatService {
     // Validate participants exist
     const participants = await User.find({
       _id: { $in: sortedParticipants },
-    }).select("name email role");
+    }).select("name email role userType");
 
     if (participants.length !== 2) {
       throw new CustomError(
@@ -108,7 +108,7 @@ class ChatService {
       })),
     });
 
-    await conversation.populate("participantIds", "name email role");
+    await conversation.populate("participantIds", "name email role userType");
     await conversation.populate({
       path: "contextId",
       select: "title agreedPrice status",
@@ -244,7 +244,7 @@ class ChatService {
 
     // Validate conversation and authorization
     const conversation: any = await Conversation.findById(conversationId)
-      .populate("participantIds", "name email role")
+      .populate("participantIds", "name email role userType")
       .populate({
         path: "contextId",
         select: "title agreedPrice status",
@@ -337,6 +337,7 @@ class ChatService {
         name: p.name,
         email: p.email,
         role: p.role,
+        userType: p.userType,
         isOnline: status?.isOnline || false,
         lastSeen: status?.lastSeen,
       };
@@ -377,7 +378,7 @@ class ChatService {
     } = {}
   ) {
     const { page = 1, limit = 20, filter = "all" } = options;
-
+    console.log("userId", userId);
     const query: any = {
       participantIds: new mongoose.Types.ObjectId(userId),
     };
@@ -403,7 +404,7 @@ class ChatService {
       .sort({ updatedAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
-      .populate("participantIds", "name email role")
+      .populate("participantIds", "name email role userType")
       .populate({
         path: "contextId",
         select: "title agreedPrice status",
