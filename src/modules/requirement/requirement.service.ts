@@ -54,7 +54,7 @@ class ReqService {
       if (budgetMax) query["details.budgetMax"] = { $lte: parseInt(budgetMax) };
     }
     if (colorType) query["details.colorType"] = colorType;
-    if (certified !== undefined) query["details.certified"] = certified;
+    if (certified !== undefined) query["details.certified"] = certified == "true" ? true : false;
     console.log("query", query);
 
     // Auto-disable expired requirements
