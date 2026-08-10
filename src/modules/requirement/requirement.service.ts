@@ -45,12 +45,13 @@ class ReqService {
     if (diamondType) query["details.diamondType"] = diamondType;
     if (shapes) query["details.shapes"] = { $in: shapes.split(",") };
     if (caratMin || caratMax) {
-      query["details.caratMin"] = { $gte: caratMin || 0 };
-      if (caratMax) query["details.caratMax"] = { $lte: caratMax };
+      query["details.caratMin"] = { $gte: parseFloat(caratMin) || 0 };
+      if (caratMax) query["details.caratMax"] = { $lte: parseFloat(caratMax) };
     }
+    console.log("budgetMin", budgetMin, "budgetMax", budgetMax);
     if (budgetMin || budgetMax) {
-      query["details.budgetMin"] = { $gte: budgetMin || 0 };
-      if (budgetMax) query["details.budgetMax"] = { $lte: budgetMax };
+      query["details.budgetMin"] = { $gte: parseInt(budgetMin) || 0 };
+      if (budgetMax) query["details.budgetMax"] = { $lte: parseInt(budgetMax) };
     }
     if (colorType) query["details.colorType"] = colorType;
     if (certified !== undefined) query["details.certified"] = certified;
