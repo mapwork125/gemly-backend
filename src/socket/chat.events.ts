@@ -15,13 +15,19 @@ export default function chatEvents(
       payload;
 
     // Validation
+    console.log("conversationId message data...", conversationId);
+    console.log("text message data...", text);
+    console.log("senderId message data...", senderId);
+
+
+
     if (!conversationId || !text || !senderId || !text.trim()) {
       socket.emit("message-error", {
         error: "Invalid message data",
       });
       return;
     }
-
+    console.log("Message data validated successfully");
     try {
       // Store message
       const message = await ChatService.sendMessage({
@@ -31,7 +37,7 @@ export default function chatEvents(
         attachments: attachments || [],
         replyToMessageId,
       });
-
+      console.log("Message stored: new Msgessage");
       // Emit to all participants in the conversation
       io.to(`conv_${conversationId}`).emit("new-message", {
         messageId: message._id,

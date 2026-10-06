@@ -151,6 +151,7 @@ class ChatService {
 
     // Validate conversation exists and user is participant
     const conversation: any = await Conversation.findById(conversationId);
+    console.log("conversation data...", conversation);
     if (!conversation) {
       throw new CustomError(
         RESPONSE_MESSAGES.CONVERSATION_NOT_FOUND || "Conversation not found",
@@ -162,7 +163,7 @@ class ChatService {
     const isParticipant = conversation.participantIds.some(
       (id: mongoose.Types.ObjectId) => id.toString() === senderId
     );
-
+    console.log("isParticipant data...", isParticipant);
     if (!isParticipant) {
       throw new CustomError(
         "User is not a participant of this conversation",
@@ -199,7 +200,7 @@ class ChatService {
         return setting;
       }
     );
-
+    console.log("conversation data after message...", conversation);
     await conversation.save();
 
     // Send push notification to offline participants
